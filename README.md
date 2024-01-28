@@ -1,23 +1,39 @@
 # Widgets Bin
 
-A collection of widgets, normally a single file tool with a simple purpose.
+A collection of widgets scripts, normally a single file tool with a simple purpose.
 
 --------------------------------------------------------------------------------
+
+
+
 
 # `get_address`
 
 ...
 
+
+
+
 # `get_datetime`
 
 ...
 
+
+
+
 # `get_maxmind_database`
 
-Get one or more Maxmind GeoLite2 databases using an API key
+Download one or more Maxmind GeoLite2 database editions using an API key. 
+Optionally unpack the mmdb from the archive and remove the archive.
 
-* get_maxmind_database.sh
+See Also:
+
+* https://www.maxmind.com/en/geoip-databases
+* https://dev.maxmind.com/geoip/geolite2-free-geolocation-data
+
+* [get_maxmind_database.sh](https://github.com/kyoobit/widgets_bin/blob/main/get_maxmind_database.sh)
 
 Example usage:
 
-    get_maxmind_database.sh --key <API KEY> --database 
+    get_maxmind_database.sh --key <KEY> --database GeoLite2-ASN
+    get_maxmind_database.sh -u -e GeoLite2-ASN,GeoLite2-City -k <KEY>
