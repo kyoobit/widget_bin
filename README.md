@@ -1,6 +1,6 @@
-# Widgets Bin
+# Widget Bin
 
-A collection of widgets scripts, normally a single file tool with a simple purpose.
+A collection of widget scripts, normally a single file to provide a tool for a simple purpose.
 
 --------------------------------------------------------------------------------
 
