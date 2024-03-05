@@ -86,3 +86,10 @@ Example usage:
 get_maxmind_database.sh --key <KEY> --database GeoLite2-ASN
 get_maxmind_database.sh -u -e GeoLite2-ASN,GeoLite2-City -k <KEY>
 ```
+
+# `raspberrypi_blinker.py`
+
+A fun script that toggles GPIO pin power states on a Raspberry Pi which blinks dozens of LEDs wired to the system. That is it, just blinking LEDs for the fun of computing. The frequency of LED power state changes will increase and decrease with a configurable peak time option. A quiet period to turn on/off the LED blinking is also an option since some LEDs can be quite bright.
+
+
+
