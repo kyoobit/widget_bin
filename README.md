@@ -14,6 +14,65 @@ A collection of widget scripts, normally a single file to provide a tool for a s
 
 
 
+# `get_ciphers.sh`
+
+A wrapper script to OpenSSL which attempts to enumerate available protocols and 
+ciphers using the `openssl s_client` or similar libraries like LibreSSL. This is handy for systems where `nmap` cannot be installed. The `-openssl` option allows for a specific library binary path to be specified. The `--help` option has more information.
+
+```
+get_ciphers.sh -connect nateroyer.com
+get_ciphers.sh -connect nateroyer.com -openssl /usr/bin/openssl
+get_ciphers.sh -v -connect 10.255.0.1:8443 -servername www.example.com
+get_ciphers.sh -v -connect 10.255.0.1 -port 8443 -protocols 'tls1_2 tls1_3'
+```
+
+Example output:
+
+```
+% bash get_ciphers.sh -connect nateroyer.com
+* WARNING: Using 'nateroyer.com' for -servername option
+* WARNING: Using default port '443' 
+Starting get_ciphers.sh (0.0.5a) at Sun Mar 10 08:06:20 MDT 2024
+Using openssl version: OpenSSL 3.2.1 30 Jan 2024 (Library: OpenSSL 3.2.1 30 Jan 2024)
+-------------------------------------------------------------------------
+OpenSSL scan report for nateroyer.com (nateroyer.com:443)
+Checking protocol(s): ssl3 tls1 tls1_1 tls1_2 tls1_3
+Client has 68 cipher(s) available
+|
+|   SSLv3 (ssl3)
+|     ssl3 (-ssl3) Protocol not supported by s_client (s_client: unknown option: -ssl3)
+|     ssl3 (-ssl3) No supported cipher suite found
+|
+|   TLSv1.0 (tls1)
+|     tls1 (-tls1) No cipher suites, trying each cipher, takes awhile...
+|     tls1 (-tls1) No supported cipher found
+|
+|   TLSv1.1 (tls1_1)
+|     tls1_1 (-tls1_1) No cipher suites, trying each cipher, takes awhile...
+|     tls1_1 (-tls1_1) No supported cipher found
+|
+|   TLSv1.2 (tls1_2)
+|     ECDHE-RSA-AES256-GCM-SHA384
+|     ECDHE-RSA-CHACHA20-POLY1305
+|     ECDHE-RSA-AES128-GCM-SHA256
+|     ECDHE-RSA-AES256-SHA384
+|     ECDHE-RSA-AES128-SHA256
+|     AES256-GCM-SHA384
+|     AES128-GCM-SHA256
+|     AES256-SHA256
+|     AES128-SHA256
+|
+|   TLSv1.3 (tls1_3)
+|     TLS_AES_256_GCM_SHA384
+|     TLS_CHACHA20_POLY1305_SHA256
+|     TLS_AES_128_GCM_SHA256
+|
+-------------------------------------------------------------------------
+```
+
+
+
+
 # `get_datetime`
 
 List different time zones based on input or current datetime. This makes use of the [zoneinfo](https://docs.python.org/3/library/zoneinfo.html) added in Python 3.9. See `-h/--help` for available options.
