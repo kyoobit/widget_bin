@@ -7,13 +7,6 @@ A collection of widget scripts, normally a single file to provide a tool for a s
 
 
 
-# `get_address`
-
-...
-
-
-
-
 # `get_ciphers.sh`
 
 A wrapper script to OpenSSL which attempts to enumerate available protocols and 
@@ -73,7 +66,7 @@ Client has 68 cipher(s) available
 
 
 
-# `get_datetime`
+# `get_datetime.py`
 
 List different time zones based on input or current datetime. This makes use of the [zoneinfo](https://docs.python.org/3/library/zoneinfo.html) added in Python 3.9. See `-h/--help` for available options.
 
@@ -127,7 +120,59 @@ python -m pip install --upgrade pip pytest
 python -m pytest -v get_datetime_test.py
 ```
 
-# `get_maxmind_database`
+
+
+
+# `get_ipaddress.py`
+
+A wrapper script to the Python `ipaddress` module which provides information about IP addresses. Supplement information may be read from Maxmind GeoLite2 databases for additional information about IP addresses.
+
+Example usage:
+
+```
+get_ipaddress.py 140.82.112.3 2a09:bac3:6596:1ceb::/64
+get_ipaddress.py 140.82.112.3/25 2a09:bac3:6596:1ceb::2f8:1e
+get_ipaddress.py 140.82.113.123 --in 140.82.112.0/23
+```
+
+Example output:
+
+```
+% python3 get_ipaddress.py 140.82.112.3 2a09:bac3:6596:1ceb::2f8:1e --geoinfo
+address: 140.82.112.3
+----------------------------------------------------------------
+version           : 4
+compressed        : 140.82.112.3
+exploded          : 140.82.112.3
+packed            : b'\x8cRp\x03'
+reverse_pointer   : 3.112.82.140.in-addr.arpa
+asn               : 36459
+asn_network       : GITHUB
+asn_organization  : 140.82.112.0/20
+continent         : NA, North America
+country           : US, United States
+subdivisions      : None, None
+
+address: 2a09:bac3:6596:1ceb::2f8:1e
+----------------------------------------------------------------
+version           : 6
+compressed        : 2a09:bac3:6596:1ceb::2f8:1e
+exploded          : 2a09:bac3:6596:1ceb:0000:0000:02f8:001e
+packed            : b'*\t\xba\xc3e\x96\x1c\xeb\x00\x00\x00\x00\x02\xf8\x00\x1e'
+reverse_pointer   : e.1.0.0.8.f.2.0.0.0.0.0.0.0.0.0.b.e.c.1.6.9.5.6.3.c.a.b.9.0.a.2.ip6.arpa
+asn               : 13335
+asn_network       : CLOUDFLARENET
+asn_organization  : 2a09:bac3::/32
+city              : Salinas
+continent         : NA, North America
+country           : US, United States
+subdivisions      : CA, California
+```
+
+
+
+
+# `get_maxmind_database.sh`
 
 Download one or more Maxmind GeoLite2 database editions using an API key. 
 Optionally unpack the mmdb from the archive and remove the archive.
@@ -145,6 +190,9 @@ Example usage:
 get_maxmind_database.sh --key <KEY> --database GeoLite2-ASN
 get_maxmind_database.sh -u -e GeoLite2-ASN,GeoLite2-City -k <KEY>
 ```
+
+
+
 
 # `raspberrypi_blinker.py`
 
