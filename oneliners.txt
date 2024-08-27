@@ -1,0 +1,38 @@
+alias oneliners='cat $HOME/repos/widget_bin/oneliners.txt';
+
+echo "send a message" | wall
+
+## Git branch and merge cycle
+git clone <url>
+git checkout main
+git pull
+git checkout -b <branch name>
+git merge main
+...work, work, work ...
+git reset --soft (keeps local changes)
+git reset --hard (destructive to last commit)
+git checkout . (????)
+...work, work, work ...
+git status
+git add <files>
+git commit -m '<a useful message>'
+git push -u origin <branch name>
+...follow open pull request instructions...
+git checkout main
+git pull
+git branch -d <branch name>
+
+ping -q -s 1472 -M do -c 10 <ADDRESS>
+sudo -iu root ping -q -s 1472 -M do -i .01 -c 2000 <ADDRESS>
+ping: -s size MTU minus 28 for IPv4 or MTU minus 48 for IPv6
+ping: -M do = prohibit fragmentation
+nping --tcp-connect --dest-port 80 --count 100 --delay 100ms <ADDRESS>
+
+netstat -nP -iTCP
+netstat -anv | grep <PORT>
+ps -Ao user,pid,command | grep -v grep | grep <PID>
+
+sudo -iu root tcpdump -nnvvS net <ADDRESS> and src not <ADDRESS> and not <ADDRESS>
+
+## tar pipe:
+[ -d ${SOURCE} -a ! ${SOURCE} -ef ${TARGET} ]; tar cf - ${SOURCE} | (cd ${TARGET}; tar xvf -)
