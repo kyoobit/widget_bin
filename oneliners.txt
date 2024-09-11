@@ -58,6 +58,8 @@ netstat -nP -iTCP
 netstat -anv | grep <PORT>
 ps -Ao user,pid,command | grep -v grep | grep <PID>
 
+ssh -L <PORT>:localhost:<PORT> -N -l <USER> <HOST|ADDRESS>
+
 sudo -iu root tcpdump -nnvvS net <ADDRESS> and src not <ADDRESS> and not <ADDRESS>
 
 ## tar pipe:
