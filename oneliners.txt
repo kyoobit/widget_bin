@@ -33,17 +33,20 @@ git clone <url>
 git checkout main
 git pull
 git checkout -b <branch name>
+  feature/<feature-id>/<description>
+  fix/<issue-id>/<description>
+  release/<release-string>
 git merge main
-...work, work, work ...
+  ...work, work, whoops ...
 git reset --soft (keeps local changes)
 git reset --hard (destructive to last commit)
 git checkout . (????)
-...work, work, work ...
+  ...work, work, work ...
 git status
 git add <files>
 git commit -m '<a useful message>'
 git push -u origin <branch name>
-...follow open pull request instructions...
+  ...follow open pull request instructions...
 git checkout main
 git pull
 git branch -d <branch name>
