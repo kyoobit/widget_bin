@@ -70,3 +70,7 @@ sudo -iu root tcpdump -nnvvS net <ADDRESS> and src not <ADDRESS> and not <ADDRES
 
 tmux new-session -d -s '<SESSION NAME>' '<COMMAND(S) TO RUN>'
 tmux new-session -s 'tri-panel' \; split-window -h -p 66 \; split-window -h \;
+
+## top oneshot sorted by RES memory
+top -b -n 1 -o +RES -E m -e m
+
