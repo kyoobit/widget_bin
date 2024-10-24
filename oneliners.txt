@@ -38,6 +38,7 @@ git checkout -b <branch name>
   release/<release-string>
 git merge main
   ...work, work, whoops ...
+git stash (stash changes)
 git reset --soft (keeps local changes)
 git reset --hard (destructive to last commit)
 git checkout . (????)
@@ -50,6 +51,7 @@ git push -u origin <branch name>
 git checkout main
 git pull
 git branch -d <branch name>
+git stash pop (restore stashed changes)
 
 ping -q -s 1472 -M do -c 10 <ADDRESS>
 sudo -iu root ping -q -s 1472 -M do -i .01 -c 2000 <ADDRESS>
