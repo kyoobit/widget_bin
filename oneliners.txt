@@ -12,6 +12,8 @@ crontab (but you know you should use systemd timers instead)
 
 echo "send a message" | wall
 
+find /opt/homebrew/share -perm -g+w
+
 ## Gherkin issue template
 **As a** [role]
 **I need** [function]
