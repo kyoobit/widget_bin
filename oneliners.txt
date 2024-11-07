@@ -1,5 +1,14 @@
 alias oneliners='cat $HOME/repos/widget_bin/oneliners.txt';
 
+## Age - a file encryption tool
+age-keygen -o key.txt
+tar cz data | age -r $(cat key.txt) > data.tar.gz.age
+age --decryptt -i key.txt data.tar.gz.age > data.tar.gz
+
+cat << EOF > some-file.txt
+Multi-line blob of text
+EOF
+
 crontab (but you know you should use systemd timers instead)
 # .------------- minute (0 - 59) */10 == every ten minutes
 # |  .---------- hour (0 - 23)
@@ -103,3 +112,7 @@ tmux new-session -s 'tri-panel' \; split-window -h -p 66 \; split-window -h \;
 ## top oneshot sorted by RES memory
 top -b -n 1 -o +RES -E m -e m
 
+## Configure vi to search .bash_history: ESC + /
+echo "set -o vi" >> ~/.bash_profile && source ~/.bash_profile
+
+watch -n <SECONDS> <COMMAND>
