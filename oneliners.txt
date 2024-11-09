@@ -75,6 +75,9 @@ netstat -nP -iTCP
 netstat -anv | grep <PORT>
 ps -Ao user,pid,command | grep -v grep | grep <PID>
 
+## Check for the need to reboot to finalize a security or kernel update:
+if [[ -s /var/run/reboot-required ]]; then cat /var/run/reboot-required; else  echo "System reboot NOT required"; fi
+
 ## Saltiness
 sudo salt '<pattern>|*' <function>.<action> <arguments> --out json
 
