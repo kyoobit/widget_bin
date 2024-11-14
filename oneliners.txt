@@ -63,6 +63,13 @@ git checkout main
 git pull
 git branch -d <branch name>
 git stash pop (restore stashed changes)
+  ...fork! rollback
+git checkout -b <revert_something>
+git log -n 3
+git revert --no-commit --mainline 1 HEAD~1
+git revert --continue
+git diff HEAD..origin/main
+git push
 
 ping -q -s 1472 -M do -c 10 <ADDRESS>
 sudo -iu root ping -q -s 1472 -M do -i .01 -c 2000 <ADDRESS>
@@ -76,7 +83,7 @@ netstat -anv | grep <PORT>
 ps -Ao user,pid,command | grep -v grep | grep <PID>
 
 ## Check for the need to reboot to finalize a security or kernel update:
-if [[ -s /var/run/reboot-required ]]; then cat /var/run/reboot-required; else  echo "System reboot NOT required"; fi
+if [[ -s /var/run/reboot-required ]]; then cat /var/run/reboot-required; else echo "System reboot NOT required"; fi
 
 ## Saltiness
 sudo salt '<pattern>|*' <function>.<action> <arguments> --out json
@@ -102,12 +109,18 @@ sudo salt '*' cp.get_template salt://nginx/nginx.conf /etc/nginx/nginx.conf # Si
 sudo salt '*' cp.get_dir salt://etc/nginx/ /etc/nginx/                      # Copy a directory of files from master to minion
 sudo salt '*' nginx.signal reload                                           # Reload NGINX configuration sending a SIGNHUP
 
+sar -pd -n DEV,EDEV -u ALL 5 24 (disk,network,cpu activity every 5 seconds for 24 measurements)
+sar -dp (just disk activity)
+iostat -dmx (like sar -dp)
+
 ssh -L <PORT>:localhost:<PORT> -N -l <USER> <HOST|ADDRESS>
 
 sudo -iu root tcpdump -nnvvS net <ADDRESS> and src not <ADDRESS> and not <ADDRESS>
 
 ## tar pipe:
 [ -d ${SOURCE} -a ! ${SOURCE} -ef ${TARGET} ]; tar cf - ${SOURCE} | (cd ${TARGET}; tar xvf -)
+
+<some command> | tee /dev/tty | <some command>
 
 tmux new-session -d -s '<SESSION NAME>' '<COMMAND(S) TO RUN>'
 tmux new-session -s 'tri-panel' \; split-window -h -p 66 \; split-window -h \;
