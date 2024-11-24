@@ -122,10 +122,54 @@ sudo -iu root tcpdump -nnvvS net <ADDRESS> and src not <ADDRESS> and not <ADDRES
 
 <some command> | tee /dev/tty | <some command>
 
-tmux new-session -d -s '<SESSION NAME>' '<COMMAND(S) TO RUN>'
-tmux new-session -s 'tri-panel' \; split-window -h -p 66 \; split-window -h \;
+## Tmux Terminal Multiplexer
+┌──────────────────────┐
+│┌────────────────────┐│
+││┌────────┐┌────────┐││
+│││ SHELL$ ││ SHELL$ │││
+││└─ PANE ─┘└─ PANE ─┘││
+│└─ WINDOW(S) ────────┘│
+└─ SESSION(S) ─────────┘
+tmux new-session -s <NAME>                <--- start a new session
+tmux new -s <NAME>                        <--- start a new session
+tmux new -s <NAME> -n <NAME>              <--- start a new session named <NAME>
+tmux new -s <NAME> -d                     <--- start a new session detached
+tmux new -s <NAME> -d 'command(s) to run' <--- start a new session detached, running a command, session exits when command exits
+tmux new -s 'tri-panel' \; split-window -h -p 66 \; split-window -h \;
+tmux list-sessions
+tmux ls
+tmux attach                               <--- attach the first session
+tmux attach -t <NAME>                     <--- attach a session by name
+tmux kill-session -t <NAME>
+PREFIX
+CTRL-b ? <--- list predefined keybindings and associated commands
+CTRL-b d <--- detach session
+CTRL-b t <--- display a huge clock
+CTRL-b c <--- create a new window
+CTRL-b , <--- rename window
+CTRL-b n <--- activate next window
+CTRL-b p <--- activate previous window
+CTRL-b 0-9 <--- activate window number
+CTRL-b w <--- list of windows with a preview
+CTRL-b f <--- find a window by name
+CTRL-b & <--- exit a window (or type "exit" in the shell)
+CTRL-b q <--- displays pane numbers momentarily
+CTRL-b % <--- divide window pane vertically (50%)
+CTRL-b " <--- divide window pane horizontally (50%)
+CTRL-b o <--- cycle through window panes
+CTRL-b <ARROW>  <--- move to window pane
+CTRL-b <SPACE>  <--- cycle through these layouts
+CTRL-b x <--- close window pane
+CTRL-b : <--- enter command mode
+even-horizontal      <--- stack all panes horizontally, left to right
+even-vertical        <--- stack all panes vertically, top to bottom
+main-horizontal      <--- create one larger pane on the top and smaller panes underneath
+main-vertical        <--- creates one large pane on the left side of the screen, stacks the rest vertically on the right
+new-window -n <NAME> <--- new window with name <NAME>
+new-window -n <NAME> "command(s)" <--- new window with name <NAME> running "command(s)", window closes when command exits
+tiled                <--- arranges all panes evenly on the screen
 
-## top oneshot sorted by RES memory
+## top one shot sorted by RES memory
 top -b -n 1 -o +RES -E m -e m
 
 ## Configure vi to search .bash_history: ESC + /
