@@ -141,26 +141,15 @@ tmux ls
 tmux attach                               <--- attach the first session
 tmux attach -t <NAME>                     <--- attach a session by name
 tmux kill-session -t <NAME>
-PREFIX
-CTRL-b ? <--- list predefined keybindings and associated commands
-CTRL-b d <--- detach session
-CTRL-b t <--- display a huge clock
-CTRL-b c <--- create a new window
-CTRL-b , <--- rename window
-CTRL-b n <--- activate next window
-CTRL-b p <--- activate previous window
-CTRL-b 0-9 <--- activate window number
-CTRL-b w <--- list of windows with a preview
-CTRL-b f <--- find a window by name
-CTRL-b & <--- exit a window (or type "exit" in the shell)
-CTRL-b q <--- displays pane numbers momentarily
-CTRL-b % <--- divide window pane vertically (50%)
-CTRL-b " <--- divide window pane horizontally (50%)
-CTRL-b o <--- cycle through window panes
-CTRL-b <ARROW>  <--- move to window pane
-CTRL-b <SPACE>  <--- cycle through these layouts
-CTRL-b x <--- close window pane
-CTRL-b : <--- enter command mode
+Prefix ? <--- list predefined keybindings and associated commands
+Prefix $ <--- rename session
+Prefix d <--- detach session
+Prefix c <--- create a new window
+Prefix , <--- rename window
+Prefix w <--- list of windows with a preview
+Prefix f <--- find a window by name
+Prefix <ARROW>  <--- move to window pane in direction of <ARROW>
+Prefix : <--- enter command mode
 even-horizontal      <--- stack all panes horizontally, left to right
 even-vertical        <--- stack all panes vertically, top to bottom
 main-horizontal      <--- create one larger pane on the top and smaller panes underneath
