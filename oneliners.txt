@@ -5,6 +5,32 @@ age-keygen -o key.txt
 tar cz data | age -r $(cat key.txt) > data.tar.gz.age
 age --decryptt -i key.txt data.tar.gz.age > data.tar.gz
 
+apropos <WORD>
+
+## BASH
+#!/bin/bash
+#!/usr/bin/env bash
+$ foo=1:2:3:4:5; echo ${foo##*:} => 5
+$ foo=1:2:3:4:5; echo ${foo#*:}  => 2:3:4:5
+$ foo=1:2:3:4:5; echo ${foo%%:*} => 1
+$ foo=1:2:3:4:5; echo ${foo%:*}  => 1:2:3:4
+$ foo=""; echo ${foo:-bar}; foo="foo"; echo ${foo:-bar}; foo=""; echo ${foo:-bar};
+$ foo=""; echo ${foo}; echo ${foo:=bar}; echo ${foo};
+$ foo=""; bar="bar"; echo ${foo:+bar};
+$ foo=""; echo ${foo:?"error message"}; echo ${foo:?};
+$ foo=""; echo ${foo:?"error message"}; => -bash: foo: error message
+$ foo=""; echo ${foo:?}; => -bash: foo: parameter null or not set
+$ foo=""; echo ${foo}; foo=${1-false}; echo ${foo}; if [[ ${foo} == false ]]; then echo "hit"; else echo "miss"; fi;
+$ echo "addr=10."$((RANDOM%255)).$((RANDOM%255)).$((RANDOM%255))
+for ((n=14; n<=17; n++)); do echo ${n}; done
+
+for i in $(cat list); do something; read PAUSE; done
+for i in $(cat list); do something | shuf | head -n 1; done
+
+while read -r line; do
+    echo "$line" | awk '{print $2}'
+done < <( ... )
+
 cat << EOF > some-file.txt
 Multi-line blob of text
 EOF
@@ -20,6 +46,20 @@ crontab (but you know you should use systemd timers instead)
 # *  *  *  *  *  <command to be executed> 2>&1 >> <always log>
 
 echo "send a message" | wall
+
+systemctl status firewalld
+sudo firewall-cmd --get-zones
+sudo firewall-cmd --get-active-zones
+sudo firewall-cmd --set-default-zone=public
+sudo firewall-cmd --list-all
+sudo firewall-cmd --reload
+
+sudo fdisk -l
+sudo fdisk /dev/sda
+n p
+w
+sudo wipefs --all /dev/sda --force
+sudo mkfs.xfs -f /dev/sda1
 
 find /opt/homebrew/share -perm -g+w
 
@@ -71,6 +111,61 @@ git revert --continue
 git diff HEAD..origin/main
 git push
 
+grep --line-buffered --color=always
+
+sudo ip link add bridge0 type bridge
+sudo ip link set <INTERFACE> master bridge0
+sudo ip address add <ADDRESS>/24 dev bridge0
+sudo ip link set dev bridge0
+sudo ip link set dev bridge0 up
+sudo ip route add <DST ADDRESS> via <GATEWAY> dev <INTERFACE>
+sudo ip link set <INTERFACE> down
+
+## JunOS Rooter Router
+help topic ?
+help reference ?
+help apropos ?
+help syslog <TAG>
+show chassis fabric summary
+show chassis environment
+show chassis power
+show chassis fan
+show system storage
+show chassis alarms
+show system alarms
+show system core-dumps
+show system uptime
+show system commit
+show log messages | last 10
+show | compare rollback 1
+show interfaces * terse | except \.
+show interfaces <PATTERN> | display set
+show interfaces <INTERFACE> statistics
+monitor interface <INTERFACE>
+monitor traffic matching (src || dst <ADDRESS>)&&tcp&&port <PORT> write-file file.pcap count 150
+ping <ADDRESS> interval 0.1 size 1472 do-not-fragment count 2000
+traceroute <ADDRESS> bypass-routing inet6 interface <INTERFACE>
+disable interface <INTERFACE>
+set interface <INTERFACE> [<unit#>] disable
+delete interface <INTERFACE> [<unit#>] disable
+enable interface <INTERFACE>
+request system storage cleanup dry-run
+request system reboot
+request system power-off
+
+lsblk
+sudo pvdisplay
+sudo vgdisplay
+sudo lvdisplay
+sudo lvresize --resizefs --size +<PE SIZE FREE - 0.1>G <LV PATH> --test
+lsblk --output MOUNTPOINT,UUID
+sudo vi /etc/fstab
+sudo systemctl daemon-reload
+
+## Lowercase
+tr '[:upper:]' '[:lower:]'
+awk '{print tolower($0)}'
+
 ping -q -s 1472 -M do -c 10 <ADDRESS>
 sudo -iu root ping -q -s 1472 -M do -i .01 -c 2000 <ADDRESS>
 ping: -s size MTU minus 28 for IPv4 or MTU minus 48 for IPv6
@@ -81,6 +176,23 @@ nping --tcp-connect --dest-port 80 --count 100 --delay 100ms <ADDRESS>
 netstat -nP -iTCP
 netstat -anv | grep <PORT>
 ps -Ao user,pid,command | grep -v grep | grep <PID>
+
+nmcli connection show
+nmcli device show <INTERFACE>
+sudo nmcli connection add con-name vbr1s0 ifname vbr1s0 type bridge stp off
+sudo nmcli connection modify vbr1s0 ipv4.addresses '<ADDRESS>/24'
+sudo nmcli connection modify vbr1s0 ipv4.gateway <ADDRESS>
+sudo nmcli connection modify vbr1s0 ipv4.dns <ADDRESS>
+sudo nmcli connection up vbr1s0
+
+sudo vi /etc/sysctl.d/50-enable-forwarding.conf
+sysctl net.ipv4.ip_forward
+echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
+sysctl net.ipv6.conf.default.forwarding
+echo 1 | sudo tee /proc/sys/net/ipv6/conf/default/forwarding
+# Enable forwarding for dual stack
+net.ipv4.ip_forward=1
+net.ipv6.conf.all.forwarding=1
 
 ## Check for the need to reboot to finalize a security or kernel update:
 if [[ -s /var/run/reboot-required ]]; then cat /var/run/reboot-required; else echo "System reboot NOT required"; fi
@@ -167,5 +279,7 @@ top -b -n 1 -o +RES -E m -e m
 
 ## Configure vi to search .bash_history: ESC + /
 echo "set -o vi" >> ~/.bash_profile && source ~/.bash_profile
+
+sudo usermod --groups <GROUP> --append <USER>
 
 watch -n <SECONDS> <COMMAND>
