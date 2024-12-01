@@ -115,12 +115,13 @@ iostat -dmx (like sar -dp)
 
 ssh -L <PORT>:localhost:<PORT> -N -l <USER> <HOST|ADDRESS>
 
-sudo -iu root tcpdump -nnvvS net <ADDRESS> and src not <ADDRESS> and not <ADDRESS>
-
 ## tar pipe:
 [ -d ${SOURCE} -a ! ${SOURCE} -ef ${TARGET} ]; tar cf - ${SOURCE} | (cd ${TARGET}; tar xvf -)
 
 <some command> | tee /dev/tty | <some command>
+
+sudo -iu root tcpdump -nnvvS net <ADDRESS> and src not <ADDRESS> and not <ADDRESS>
+sudo -iu root tcpdump -s 1600 -i any -nn tcp port <PORT> and host <ADDRESS> -Z <USER> -w ~<USER>/$(hostname)-$(date '+%s').pcap
 
 ## Tmux Terminal Multiplexer
 ┌──────────────────────┐
@@ -149,14 +150,17 @@ Prefix , <--- rename window
 Prefix w <--- list of windows with a preview
 Prefix f <--- find a window by name
 Prefix <ARROW>  <--- move to window pane in direction of <ARROW>
+Prefix ! <--- create a window from the window active pane
+Prefix z <--- enter/exit full window zoom of a window pane
 Prefix : <--- enter command mode
 even-horizontal      <--- stack all panes horizontally, left to right
 even-vertical        <--- stack all panes vertically, top to bottom
 main-horizontal      <--- create one larger pane on the top and smaller panes underneath
 main-vertical        <--- creates one large pane on the left side of the screen, stacks the rest vertically on the right
 new-window -n <NAME> <--- new window with name <NAME>
-new-window -n <NAME> "command(s)" <--- new window with name <NAME> running "command(s)", window closes when command exits
-tiled                <--- arranges all panes evenly on the screen
+new-window -n <NAME> "command(s)"   <--- new window with name <NAME> running "command(s)", window closes when command exits
+set-window-option synchronize-panes on <--- synchronize command entry on multiple panes
+tmux send-keys -t [session]:[window].[pane] 'command(s) to run' C-m
 
 ## top one shot sorted by RES memory
 top -b -n 1 -o +RES -E m -e m
