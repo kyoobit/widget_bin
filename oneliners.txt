@@ -121,6 +121,10 @@ sudo ip link set dev bridge0 up
 sudo ip route add <DST ADDRESS> via <GATEWAY> dev <INTERFACE>
 sudo ip link set <INTERFACE> down
 
+sudo iptables -n -L -v
+sudo vi /etc/sysconfig/iptables
+sudo /etc/init.d/iptables reload
+
 ## JunOS Rooter Router
 help topic ?
 help reference ?
@@ -176,6 +180,22 @@ nping --tcp-connect --dest-port 80 --count 100 --delay 100ms <ADDRESS>
 netstat -nP -iTCP
 netstat -anv | grep <PORT>
 ps -Ao user,pid,command | grep -v grep | grep <PID>
+
+nftables - A modern Linux kernel packet classification framework - https://wiki.nftables.org/
+sudo nft list tables [<FAMILY:ip|arp|ip6|bridge|inet|netdev>]
+sudo nft list table <TABLE>
+sudo nft -n -a list table <TABLE>
+nft list chain <TABLE> <CHAIN>
+sudo nft 'add chain [<FAMILY>] <TABLE NAME> <CHAIN NAME> \
+  { type <TYPE> hook <HOOK> [device <DEVICE>] priority <PRIORITY>; [policy <POLICY>;] [comment <COMMENT>;] }
+sudo nft 'add table ip filter'
+sudo nft 'add chain ip filter input { type filter hook input priority 0; }'
+sudo nft 'add chain ip filter output { type filter hook output priority 0; }'
+sudo nft 'add rule <TABLE> <CHAIN> <FAMILY> ...'
+sudo nft 'add rule filter output ip daddr 4.3.2.1 counter'
+sudo nft 'insert rule <TABLE> <CHAIN> position <INT> ...'
+sudo nft 'replace rule <TABLE> <CHAIN> handle <INT> ...'
+sudo nft 'delete rule <TABLE> <CHAIN> handle <INT>'
 
 nmcli connection show
 nmcli device show <INTERFACE>
