@@ -145,6 +145,10 @@ show | compare rollback 1
 show interfaces * terse | except \.
 show interfaces <PATTERN> | display set
 show interfaces <INTERFACE> statistics
+show route <ADDRESS[/SUBNET]> detail # lower number has priority
+show route forwarding-table
+show route table
+show firewall log
 monitor interface <INTERFACE>
 monitor traffic matching (src || dst <ADDRESS>)&&tcp&&port <PORT> write-file file.pcap count 150
 ping <ADDRESS> interval 0.1 size 1472 do-not-fragment count 2000
