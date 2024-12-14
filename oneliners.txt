@@ -47,6 +47,8 @@ crontab (but you know you should use systemd timers instead)
 
 echo "send a message" | wall
 
+ethtool <DEVICE>
+
 systemctl status firewalld
 sudo firewall-cmd --get-zones
 sudo firewall-cmd --get-active-zones
@@ -249,7 +251,14 @@ sar -pd -n DEV,EDEV -u ALL 5 24 (disk,network,cpu activity every 5 seconds for 2
 sar -dp (just disk activity)
 iostat -dmx (like sar -dp)
 
+sed -i '8i|thing|' <--- insert thing at line 8
+sed -i '8d' <--- delete line 8
+
 ssh -L <PORT>:localhost:<PORT> -N -l <USER> <HOST|ADDRESS>
+
+systemctl status
+systemctl list-units
+systemctl --failed
 
 ## tar pipe:
 [ -d ${SOURCE} -a ! ${SOURCE} -ef ${TARGET} ]; tar cf - ${SOURCE} | (cd ${TARGET}; tar xvf -)
