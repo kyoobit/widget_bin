@@ -113,6 +113,23 @@ git revert --continue
 git diff HEAD..origin/main
 git push
 
+## GPG - GNU Privacy Guard (PGP): ~/.gnupg
+gpg --dump-options
+gpg --rfc4880
+gpg --gen-key
+## Generate an "armored" key in ASCII
+gpg --armour --export you@example.net > pubkey.asc
+## Encrypt a message:
+gpg --import pubkey.asc
+gpg --encrypt -r you@example.net --armour < in.txt -o out.txt
+## Sign a message:
+gpg --sign in.txt --output signed.sig
+gpg --clearsign in.txt
+gpg --output out.sig --detach-sig in.txt
+gpg --verify out.sig in.txt
+## Decrypt a message:
+gpg --decrypt out.txt
+
 grep --line-buffered --color=always
 
 sudo ip link add bridge0 type bridge
@@ -171,6 +188,12 @@ sudo lvresize --resizefs --size +<PE SIZE FREE - 0.1>G <LV PATH> --test
 lsblk --output MOUNTPOINT,UUID
 sudo vi /etc/fstab
 sudo systemctl daemon-reload
+## Mount a LV in rescue mode
+lvm vgscan -v
+vgchange -a y "<vg_name>"
+lvm lvs --all
+mkdir /mnt/tmp_root
+mount /dev/<vg_name>/<lv_name> /mnt/tmp_root
 
 ## Lowercase
 tr '[:upper:]' '[:lower:]'
@@ -254,6 +277,8 @@ iostat -dmx (like sar -dp)
 sed -i '8i|thing|' <--- insert thing at line 8
 sed -i '8d' <--- delete line 8
 
+shred --verbose --force --zero --iterations 25 /dev/sda99
+
 ssh -L <PORT>:localhost:<PORT> -N -l <USER> <HOST|ADDRESS>
 
 systemctl status
@@ -316,3 +341,4 @@ echo "set -o vi" >> ~/.bash_profile && source ~/.bash_profile
 sudo usermod --groups <GROUP> --append <USER>
 
 watch -n <SECONDS> <COMMAND>
+watch -n 2 "netstat –tulpnc"
