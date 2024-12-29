@@ -180,6 +180,16 @@ request system storage cleanup dry-run
 request system reboot
 request system power-off
 
+logger -t "<TAG>" -p <FACILITY.PRIORITY> "<MESSAGE>"
+logger -p <FACILITY.PRIORITY> -f /path/to/file/with/message
+FACILITIES='auth authpriv cron daemon ftp kern lpr mail news syslog user uucp local0 local1 local2 local3 local4 local5 local6 local7'
+PRIORITIES='emerg alert crit err warning notice info debug'
+for f in $FACILITIES; do
+for p in $PRIORITIES; do
+logger -p $f.$p "$PROG[$$]: testing $f.$p"
+done
+done
+
 lsblk
 sudo pvdisplay
 sudo vgdisplay
@@ -195,6 +205,11 @@ lvm lvs --all
 mkdir /mnt/tmp_root
 mount /dev/<vg_name>/<lv_name> /mnt/tmp_root
 
+sudo lsof -i[TCP|UDP][@host][:port] # network connections for all processes
+sudo lsof -p <PID>                  # All open files for a specific PID
+sudo lsof -c <COMMAND>              # All open files for a specific command
+sudo lsof -u <USERNAME>             # All open files for a specific username
+
 ## Lowercase
 tr '[:upper:]' '[:lower:]'
 awk '{print tolower($0)}'
@@ -209,6 +224,11 @@ nping --tcp-connect --dest-port 80 --count 100 --delay 100ms <ADDRESS>
 netstat -nP -iTCP
 netstat -anv | grep <PORT>
 ps -Ao user,pid,command | grep -v grep | grep <PID>
+
+netstat --inet              # Connected sockets
+netstat --inet --listening  # Server sockets
+netstat --inet --all        # Both connected and server sockets
+netstat --inet ... -p       # Identify processes
 
 nftables - A modern Linux kernel packet classification framework - https://wiki.nftables.org/
 sudo nft list tables [<FAMILY:ip|arp|ip6|bridge|inet|netdev>]
@@ -246,6 +266,8 @@ net.ipv6.conf.all.forwarding=1
 ## Check for the need to reboot to finalize a security or kernel update:
 if [[ -s /var/run/reboot-required ]]; then cat /var/run/reboot-required; else echo "System reboot NOT required"; fi
 
+rpcinfo -p [host]           # Dynamically assigned ports for RPC services
+
 ## Saltiness
 sudo salt '<pattern>|*' <function>.<action> <arguments> --out json
 
@@ -281,6 +303,12 @@ shred --verbose --force --zero --iterations 25 /dev/sda99
 
 ssh -L <PORT>:localhost:<PORT> -N -l <USER> <HOST|ADDRESS>
 
+strace -o output.trace <COMMAND>             # save trace output to a file
+strace -f -ff -o filename <COMMAND>          # save child trace process output to a separate file
+strace -p <PID>                              # attach to a running process and trace system calls
+strace -e trace=network,read,write <COMMAND> # trace network system calls
+strace -e trace=read -e read=4 <COMMAND>     # print the transferred data in both hexadecimal and ASCII
+
 systemctl status
 systemctl list-units
 systemctl --failed
@@ -290,6 +318,8 @@ systemctl --failed
 
 <some command> | tee /dev/tty | <some command>
 
+sudo -iu root tcpdump -nn
+sudo -iu root tcpdump -w filename [-c count] [-i interface] [-s snap-length] [expression]
 sudo -iu root tcpdump -nnvvS net <ADDRESS> and src not <ADDRESS> and not <ADDRESS>
 sudo -iu root tcpdump -s 1600 -i any -nn tcp port <PORT> and host <ADDRESS> -Z <USER> -w ~<USER>/$(hostname)-$(date '+%s').pcap
 
