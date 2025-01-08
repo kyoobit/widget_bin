@@ -48,6 +48,7 @@ crontab (but you know you should use systemd timers instead)
 echo "send a message" | wall
 
 ethtool <DEVICE>
+ethtool -m <DEVICE>
 
 systemctl status firewalld
 sudo firewall-cmd --get-zones
@@ -99,6 +100,8 @@ git checkout . (????)
 git status
 git add <files>
 git commit -m '<a useful message>'
+  ...whoops, forgot something, edit and:
+git commit --amend --no-edit
 git push -u origin <branch name>
   ...follow open pull request instructions...
 git checkout main
@@ -145,6 +148,7 @@ sudo vi /etc/sysconfig/iptables
 sudo /etc/init.d/iptables reload
 
 ## JunOS Rooter Router
+console port (RJ45 rollover cable <-> USB): ls -1 /dev | grep -E '(USB|ACM)'; screen /dev/tty.???? 9600
 help topic ?
 help reference ?
 help apropos ?
@@ -153,6 +157,7 @@ show chassis fabric summary
 show chassis environment
 show chassis power
 show chassis fan
+show virtual-chassis
 show system storage
 show chassis alarms
 show system alarms
@@ -167,7 +172,10 @@ show interfaces <INTERFACE> statistics
 show route <ADDRESS[/SUBNET]> detail # lower number has priority
 show route forwarding-table
 show route table
+show ethernet-switching table | match <MAC>
+show lacp interfaces <LABLE> extensive
 show firewall log
+clear interface statistics <INTERFACE|all>
 monitor interface <INTERFACE>
 monitor traffic matching (src || dst <ADDRESS>)&&tcp&&port <PORT> write-file file.pcap count 150
 ping <ADDRESS> interval 0.1 size 1472 do-not-fragment count 2000
