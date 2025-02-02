@@ -309,6 +309,11 @@ sudo salt '*' cp.get_template salt://nginx/nginx.conf /etc/nginx/nginx.conf # Si
 sudo salt '*' cp.get_dir salt://etc/nginx/ /etc/nginx/                      # Copy a directory of files from master to minion
 sudo salt '*' nginx.signal reload                                           # Reload NGINX configuration sending a SIGNHUP
 
+sudo salt-run jobs.active
+sudo salt-run jobs.lookup_jid <JOB ID>
+sudo salt 'NODE' saltutil.running
+sudo salt 'NODE' saltutil.kill_job <JOB ID>
+
 sar -pd -n DEV,EDEV -u ALL 5 24 (disk,network,cpu activity every 5 seconds for 24 measurements)
 sar -dp (just disk activity)
 iostat -dmx (like sar -dp)
@@ -319,6 +324,11 @@ sed -i '8d' <--- delete line 8
 shred --verbose --force --zero --iterations 25 /dev/sda99
 
 ssh -L <PORT>:localhost:<PORT> -N -l <USER> <HOST|ADDRESS>
+ssh-keygen -t rsa -b 4096 -f /home/natroyer/.ssh/example_rsa
+ssh-keygen -t ecdsa -b 521 -f /home/natroyer/.ssh/example_ecdsa
+ssh-keygen -t ed25519 -f ~/.ssh/example_ed25519
+ssh-keygen -p -f ~/.ssh/example_ecdsa
+ssh-keygen -R <ADDRESS|HOSTNAME>
 
 strace -o output.trace <COMMAND>             # save trace output to a file
 strace -f -ff -o filename <COMMAND>          # save child trace process output to a separate file
