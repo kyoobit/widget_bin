@@ -8,6 +8,8 @@ age --decryptt -i key.txt data.tar.gz.age > data.tar.gz
 apropos <WORD>
 
 ## BASH
+export LC_TIME='C.UTF-8';
+export PS1='[\D{%F %T}] \u@\h:\w\$ ';
 #!/bin/bash
 #!/usr/bin/env bash
 $ foo=1:2:3:4:5; echo ${foo##*:} => 5
@@ -227,6 +229,49 @@ sudo lsof -u <USERNAME>             # All open files for a specific username
 ## Lowercase
 tr '[:upper:]' '[:lower:]'
 awk '{print tolower($0)}'
+
+lxc list
+lxc info <name>
+lxc image list images: | grep -i <...>
+lxc init <source> <name> (container)
+lxc init <source> <name> < config.yaml
+lxc init <source> <name> --vm
+lxc init <source> <name> --vm --config limits.cpu=4 --config limits.memory=4GiB --device root,size=32GiB
+lxc init images:alpine/edge <name> --vm --config security.secureboot=false --config ...
+lxc config get <name> <key>
+lxc config set <name> <key>=<value>
+lxc config unset <name> <key>
+lxc start <name>
+lxc start <name> --console
+lxc console <name>
+lxc console <name> --show-log
+lxc file pull <name>/path/to/file /local/path/to/file
+lxc file pull -r <name>/path/to/dir /local/path/to/dir
+lxc file push /local/path/to/file <name>/path/to/file
+lxc file push -r /local/path/to/dir <name>/path/to/dir
+lxc file edit <name>/path/to/file
+lxc file mount <name>/path/to/dir /local/path/to/dir
+lxc file delete <name>/path/to/file
+lxc exec <name> -- <command>
+lxc exec <name> --env <ENVVAR>=<value> -- <command>
+lxc exec <name> --user <name> --group <name> --cwd /path/to/dir -- <command>
+lxc snapshot <name>
+lxc snapshot <name> <snapshot name (default: snap0)>
+lxc config set <name> snapshot.schedule "0 6 * * *"
+lxc config show <name>/<snapshot name>
+lxc restore <name>/<snapshot name>
+lxc restore <name>/<snapshot name> --stateful
+lxc export <name> (default: ./<name>.tar.gz) <--- 1.6GB with two snapshots
+lxc export <name> --instance-only --optimized-storage (when using btrfs or zfs storage) <--- 517MB
+lxc export <name> --instance-only --optimized-storage --compression=bzip2 <--- 463MB
+lxc export <name> /file/path/full-backup.tar.(gz|bz2|...)
+lxc import /path/to/backup.tgz
+lxc import /path/to/backup.tgz --storage <pool>
+lxc import /path/to/backup.tgz <name>
+lxc delete show <name>/<snapshot name>
+lxc config set <name> security.protection.delete=true
+lxc config unset <name> security.protection.delete --property
+lxc delete <name>
 
 ping -q -s 1472 -M do -c 10 <ADDRESS>
 sudo -iu root ping -q -s 1472 -M do -i .01 -c 2000 <ADDRESS>
