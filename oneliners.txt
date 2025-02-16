@@ -47,6 +47,10 @@ crontab (but you know you should use systemd timers instead)
 # |  |  |  |  |  TEST: env > ~/cronenv; env - `cat ~/cronenv` /bin/sh
 # *  *  *  *  *  <command to be executed> 2>&1 >> <always log>
 
+dd if=/path/to/some.iso of=/dev/disk4 bs=1m
+dd if=/dev/urandom of=test.obj bs=1M count=16 iflag=fullblock
+head -c 16M /dev/urandom > test.obj <--- like dd
+
 echo "send a message" | wall
 
 ethtool <DEVICE>
@@ -235,7 +239,7 @@ lxc info <name>
 lxc image list images: | grep -i <...>
 lxc init <source> <name> (container)
 lxc init <source> <name> < config.yaml
-lxc init <source> <name> --vm
+lxc launch <source> <name> --vm [--config ...]
 lxc init <source> <name> --vm --config limits.cpu=4 --config limits.memory=4GiB --device root,size=32GiB
 lxc init images:alpine/edge <name> --vm --config security.secureboot=false --config ...
 lxc config get <name> <key>
