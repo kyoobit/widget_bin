@@ -430,6 +430,7 @@ Prefix <ARROW>  <--- move to window pane in direction of <ARROW>
 Prefix ! <--- create a window from the window active pane
 Prefix z <--- enter/exit full window zoom of a window pane
 Prefix : <--- enter command mode
+Prefix [ <--- enter copy mode (use q to exit), ...arrow around
 even-horizontal      <--- stack all panes horizontally, left to right
 even-vertical        <--- stack all panes vertically, top to bottom
 main-horizontal      <--- create one larger pane on the top and smaller panes underneath
