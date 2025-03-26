@@ -445,6 +445,8 @@ top -b -n 1 -o +RES -E m -e m
 
 ## Configure vi to search .bash_history: ESC + /
 echo "set -o vi" >> ~/.bash_profile && source ~/.bash_profile
+vi :set list <--- show invisible characters (set: nolist)
+vi :set number <--- show line numbers (set: nonumber)
 
 sudo usermod --groups <GROUP> --append <USER>
 
