@@ -121,6 +121,7 @@ git revert --no-commit --mainline 1 HEAD~1
 git revert --continue
 git diff HEAD..origin/main
 git push
+git checkout production; git pull; git checkout staging; git merge production; git pull (sync from prod to staging)
 
 ## GPG - GNU Privacy Guard (PGP): ~/.gnupg
 gpg --dump-options
