@@ -24,18 +24,30 @@ $ foo=""; echo ${foo:?"error message"}; => -bash: foo: error message
 $ foo=""; echo ${foo:?}; => -bash: foo: parameter null or not set
 $ foo=""; echo ${foo}; foo=${1-false}; echo ${foo}; if [[ ${foo} == false ]]; then echo "hit"; else echo "miss"; fi;
 $ echo "addr=10."$((RANDOM%255)).$((RANDOM%255)).$((RANDOM%255))
+$ foo="ABCDEF"; echo ${foo:0:2} => AB
+$ foo="ABCDEF"; echo ${foo: -2} => EF
 for ((n=14; n<=17; n++)); do echo ${n}; done
 
 for i in $(cat list); do something; read PAUSE; done
 for i in $(cat list); do something | shuf | head -n 1; done
 
-while read -r line; do
-    echo "$line" | awk '{print $2}'
-done < <( ... )
+while read -r line; do echo "$line" | awk '{print $2}'; done < <( ... )
 
 cat << EOF > some-file.txt
 Multi-line blob of text
 EOF
+
+## Command-Line move and delete commands:
+┌──────────┬───────────────────────┬───────────────────────────────────────────┐
+│ GROUP    │ <---  DIRECTION  ---> │ USAGE                                     │
+├──────────┼───────────┬───────────┼───────────────────────────────────────────┤
+│          │ control+b │ control+f │ move one letter                           │
+│ MOVING   │ options+b │ options+f │ move one word                             │
+│          │ control+a │ control+e │ move to start/end of line                 │
+├──────────┼───────────┼───────────┼───────────────────────────────────────────┤
+│ DELETING │ control+w │ options+d │ delete one word                           │
+│ DELETING │ control+w │ options+d │ delete to start/end of line               │
+└──────────┴───────────┴───────────┴───────────────────────────────────────────┘
 
 crontab (but you know you should use systemd timers instead)
 # .------------- minute (0 - 59) */10 == every ten minutes
@@ -49,7 +61,41 @@ crontab (but you know you should use systemd timers instead)
 
 dd if=/path/to/some.iso of=/dev/disk4 bs=1m
 dd if=/dev/urandom of=test.obj bs=1M count=16 iflag=fullblock
+dd if=/dev/random bs=1024 count=102400 of=100MB.file
 head -c 16M /dev/urandom > test.obj <--- like dd
+
+## Size matters: bits v bytes
+1 Yobibyte  (YiB)  2^80 bytes .... 1208925819614629174706176 bytes
+1 Yottabyte (YB)  10^24 bytes .... 1000000000000000000000000 bytes
+1 Yottabit  (Yb)  10^24 bits  .... 1000000000000000000000000 bits
+1 Zebibyte  (ZiB)  2^70 bytes ....... 1180591620717411303424 bytes
+1 Zettabyte (ZB)  10^21 bytes ....... 1000000000000000000000 bytes
+1 Zettabit  (Zb)  10^21 bits  ....... 1000000000000000000000 bits
+1 Exbibyte  (EiB)  2^60 bytes .......... 1152921504606846976 bytes
+1 Exabyte   (EB)  10^18 bytes .......... 1000000000000000000 bytes
+1 Exabit    (Eb)  10^18 bits  .......... 1000000000000000000 bits
+1 Pebibyte  (PiB)  2^50 bytes ............. 1125899906842624 bytes
+1 Petabyte  (PB)  10^15 bytes ............. 1000000000000000 bytes
+1 Petabit   (Pb)  10^15 bits  ............. 1000000000000000 bits
+1 Tebibyte  (TiB)  2^40 bytes ................ 1099511627776 bytes
+1 Terabyte  (TB)  10^12 bytes ................ 1000000000000 bytes
+1 Terabit   (Tb)  10^12 bits  ................ 1000000000000 bits
+1 Gibibyte  (GiB)  2^30 bytes ................... 1073741824 bytes
+1 Gigabyte  (GB)  10^9  bytes ................... 1000000000 bytes
+1 Gigabit   (Gb)  10^9  bits  ................... 1000000000 bits
+1 Mebibyte  (MiB)  2^20 bytes ...................... 1048576 bytes
+1 Megabyte  (MB)  10^6  bytes ...................... 1000000 bytes
+1 Megabit   (Mb)  10^6  bits  ...................... 1000000 bits
+1 Kibibyte  (KiB)  2^10 bytes ......................... 1024 bytes
+1 Kibabyte  (KB)  10^3  bytes ......................... 1000 bytes
+1 Kilobit   (Kb)  10^3  bits  ......................... 1000 bits
+1 byte      (B)      8  bits  ............................ 8 bits
+1 bits      (b)      1  bit   ............................ 0 || 1
+
+diff -ub <(jq -S . <A>.json ) <(jq -S . <B>.json )
+
+dig +trace <FQDN> @<NS>
+dig <FQDN> +nocomments +noquestion +noauthority +noadditional +noststs (same as: +short?)
 
 echo "send a message" | wall
 
@@ -70,7 +116,14 @@ w
 sudo wipefs --all /dev/sda --force
 sudo mkfs.xfs -f /dev/sda1
 
-find /opt/homebrew/share -perm -g+w
+find /some/path -perm -g+w
+find /some/path -type f -name '*PATTERN*' -exec rm {} \;
+find /some/path -mtime +30 -delete
+find /some/path -name '*PATTERN*' -exec md5sum {} \;
+find /some/path -name '*PATTERN*' -mmin -30
+find /some/path -regextype posix-awk -regex ".*PATTERN.*" -type f -mmin -15
+
+sudo gdb <path to binary> <path to core file>
 
 ## Gherkin issue template
 **As a** [role]
@@ -141,6 +194,8 @@ gpg --verify out.sig in.txt
 gpg --decrypt out.txt
 
 grep --line-buffered --color=always
+grep --line-buffered --color=always <PATTERN> || grep --color -E "^|<PATTERN>"
+grep -oE "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" <--- IPv4-ish
 
 for n in {a..t}; do sudo hdparm -t /dev/sd${n}; done
 
@@ -238,9 +293,11 @@ awk '{print tolower($0)}'
 lxc list
 lxc info <name>
 lxc image list images: | grep -i <...>
+lxc profile create <name>
+lxc profile edit <name>
 lxc init <source> <name> (container)
 lxc init <source> <name> < config.yaml
-lxc launch <source> <name> --vm [--config ...]
+lxc launch <source> <name> --vm [--profile ...] [--config ...]
 lxc init <source> <name> --vm --config limits.cpu=4 --config limits.memory=4GiB --device root,size=32GiB
 lxc init images:alpine/edge <name> --vm --config security.secureboot=false --config ...
 lxc config get <name> <key>
@@ -278,11 +335,15 @@ lxc config set <name> security.protection.delete=true
 lxc config unset <name> security.protection.delete --property
 lxc delete <name>
 
-ping -q -s 1472 -M do -c 10 <ADDRESS>
+sudo -iu root mtr -rwc 15 <ADDRESS> (-r/--report-wide, -n/--no-dns)
+sudo -iu root mtr -rwnc 100 -4 -s 1472 <ADDRESS>
+
+ping -q -s 1472 -M do -c 10 <ADDRESS> (-s size MTU-28 <- IPv4 or MTU-48 <- IPv6) (-M do = prohibit fragmentation)
 sudo -iu root ping -q -s 1472 -M do -i .01 -c 2000 <ADDRESS>
 ping: -s size MTU minus 28 for IPv4 or MTU minus 48 for IPv6
 ping: -M do = prohibit fragmentation
 nping --tcp-connect --dest-port 80 --count 100 --delay 100ms <ADDRESS>
+sudo -iu root traceroute -T -p 80 <ADDRESS>
 
 ## Find a process by port using nestat|ss and ps
 netstat -nP -iTCP
@@ -293,6 +354,14 @@ netstat --inet              # Connected sockets
 netstat --inet --listening  # Server sockets
 netstat --inet --all        # Both connected and server sockets
 netstat --inet ... -p       # Identify processes
+
+## ss can be noisy and include more then what is required, use netstat instead
+netstat --tcp | awk '{states[\$NF]++} END {for (state in states) printf \"%s: %d\n\",state,states[state]}' | sort -nrk2"
+
+## WTF state capture:
+ss -ant | tee ~/$(hostname).sockets.$(date '+%s')
+ps -ef | tee ~/$(hostname).ps.$(date '+%s')
+top -b -n 1 | tee ~/$(hostname).top.$(date '+%s')
 
 nftables - A modern Linux kernel packet classification framework - https://wiki.nftables.org/
 sudo nft list tables [<FAMILY:ip|arp|ip6|bridge|inet|netdev>]
@@ -318,6 +387,15 @@ sudo nmcli connection modify vbr1s0 ipv4.gateway <ADDRESS>
 sudo nmcli connection modify vbr1s0 ipv4.dns <ADDRESS>
 sudo nmcli connection up vbr1s0
 
+echo | openssl s_client -connect <ADDRESS>:443 -servername <HOSTNAME> [-showcerts || -nextprotoneg '' || -tlsextdebug]
+echo | openssl s_client -connect <ADDRESS>:443 -servername <HOSTNAME> 2>&1 | openssl x509 -noout -subject -enddate
+echo | openssl s_client -connect <ADDRESS>:443 | tee /dev/tty | openssl x509 -noout -dates
+openssl verify -CAfile /path/to/ca.pem /path/to/cert.pem
+nmap --script ssl-enum-ciphers -p 443 --script-args=tls.servername=<HOST> <HOST|ADDRESS>
+nmap --script ssl-cert --script-args=tls.servername=<HOST> <HOST|ADDRESS>
+Mozilla Certificate Authority (CA): https://wiki.mozilla.org/CA/Included_Certificates
+curl -sL https://ccadb-public.secure.force.com/mozilla/IncludedCACertificateReportCSVFormat | grep Apple
+
 sudo vi /etc/sysctl.d/50-enable-forwarding.conf
 sysctl net.ipv4.ip_forward
 echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
@@ -334,6 +412,8 @@ if [[ -s /var/run/reboot-required ]]; then cat /var/run/reboot-required; else ec
 for i in {1..5}; do retry-some-command && break || sleep 10; done
 
 rpcinfo -p [host]           # Dynamically assigned ports for RPC services
+
+rsync -avz -e "ssh -i /Users/some/.ssh/key" --dry-run /some/source/dir foo:~/some/target/dir/
 
 ## Saltiness
 sudo salt '<pattern>|*' <function>.<action> <arguments> --out json
@@ -380,6 +460,8 @@ ssh-keygen -t ed25519 -f ~/.ssh/example_ed25519
 ssh-keygen -p -f ~/.ssh/example_ecdsa
 ssh-keygen -R <ADDRESS|HOSTNAME>
 
+stat --format='mtime:%y bytes:%s %n' /path/to/some/file
+
 strace -o output.trace <COMMAND>             # save trace output to a file
 strace -f -ff -o filename <COMMAND>          # save child trace process output to a separate file
 strace -p <PID>                              # attach to a running process and trace system calls
@@ -393,7 +475,7 @@ systemctl --failed
 ## tar pipe:
 [ -d ${SOURCE} -a ! ${SOURCE} -ef ${TARGET} ]; tar cf - ${SOURCE} | (cd ${TARGET}; tar xvf -)
 
-<some command> | tee /dev/tty | <some command>
+<some command> | tee /dev/tty | <some command> <--- View the content on console
 
 sudo -iu root tcpdump -nn
 sudo -iu root tcpdump -w filename [-c count] [-i interface] [-s snap-length] [expression]
@@ -441,13 +523,19 @@ new-window -n <NAME> "command(s)"   <--- new window with name <NAME> running "co
 set-window-option synchronize-panes on <--- synchronize command entry on multiple panes
 tmux send-keys -t [session]:[window].[pane] 'command(s) to run' C-m
 
-## top one shot sorted by RES memory
-top -b -n 1 -o +RES -E m -e m
+top -b -n 1 -o +RES -E m -e m <--- top one shot sorted by RES memory
+top -c -u <USER>
+top -d 3 -n 5 -b -c
+mpstat -P ALL 3 1; vmstat 3 2; free -m;
+pidstat
 
 ## Configure vi to search .bash_history: ESC + /
 echo "set -o vi" >> ~/.bash_profile && source ~/.bash_profile
-vi :set list <--- show invisible characters (set: nolist)
-vi :set number <--- show line numbers (set: nonumber)
+vi :10,20delete <--- delete lines 10 through 20
+vi :10,$delete  <--- delete from line 10 to the end of file
+vi :.,+4delete  <--- delete from current line and next 4 lines
+vi :set list    <--- show invisible characters (set: nolist)
+vi :set number  <--- show line numbers (set: nonumber)
 
 sudo usermod --groups <GROUP> --append <USER>
 
@@ -455,3 +543,6 @@ watch -n <SECONDS> <COMMAND>
 watch -n 1 ip -s link show
 watch -n 2 'netstat –tulpnc'
 watch -n 2 'netstat -s | head -n 50'
+
+xargs -n 1 -P 20 -I{} ssh ... {} 'ionice -c 3 ...'
+xargs --max-args=1 --max-procs=20 -I{} ssh -q ... {} 'ionice -c 3 find ...'
