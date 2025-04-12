@@ -177,6 +177,7 @@ git push
 git checkout production; git pull; git checkout staging; git merge production; git pull (sync from prod to staging)
 
 ## GPG - GNU Privacy Guard (PGP): ~/.gnupg
+gpg --gen-random --armor 1 16
 gpg --dump-options
 gpg --rfc4880
 gpg --gen-key
@@ -391,6 +392,7 @@ echo | openssl s_client -connect <ADDRESS>:443 -servername <HOSTNAME> [-showcert
 echo | openssl s_client -connect <ADDRESS>:443 -servername <HOSTNAME> 2>&1 | openssl x509 -noout -subject -enddate
 echo | openssl s_client -connect <ADDRESS>:443 | tee /dev/tty | openssl x509 -noout -dates
 openssl verify -CAfile /path/to/ca.pem /path/to/cert.pem
+openssl rand -base64 16
 nmap --script ssl-enum-ciphers -p 443 --script-args=tls.servername=<HOST> <HOST|ADDRESS>
 nmap --script ssl-cert --script-args=tls.servername=<HOST> <HOST|ADDRESS>
 Mozilla Certificate Authority (CA): https://wiki.mozilla.org/CA/Included_Certificates
