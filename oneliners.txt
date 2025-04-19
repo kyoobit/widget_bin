@@ -413,6 +413,11 @@ if [[ -s /var/run/reboot-required ]]; then cat /var/run/reboot-required; else ec
 ## Retry
 for i in {1..5}; do retry-some-command && break || sleep 10; done
 
+resolvectl status                    # dns system configuration
+sudo resolvectl statistics           # dns system statistics
+resolvectl query <HOSTNAME|ADDRESS>  # dns resolution
+resolvectl query --interface=vbr1s0 --type=AAAA --json=short <HOSTNAME|ADDRESS>
+
 rpcinfo -p [host]           # Dynamically assigned ports for RPC services
 
 rsync -avz -e "ssh -i /Users/some/.ssh/key" --dry-run /some/source/dir foo:~/some/target/dir/
