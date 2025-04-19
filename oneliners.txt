@@ -257,6 +257,15 @@ request system storage cleanup dry-run
 request system reboot
 request system power-off
 
+kubectl apply -f deployment.yaml
+kubectl get -n <NAMESPACE> deployment/<NAME>
+kubectl get -n <NAMESPACE> pods
+kubectl logs -n <NAMESPACE> deployment/<NAME> --follow
+kubectl exec -n <NAMESPACE> deployment/<NAME> -t -- <COMMAND>
+kubectl exec -n <NAMESPACE> deployment/<NAME> -it -- /bin/sh
+kubectl replace -f deployment.yaml --force
+kubectl delete -n <NAMESPACE> deployment/<NAME>
+
 logger -t "<TAG>" -p <FACILITY.PRIORITY> "<MESSAGE>"
 logger -p <FACILITY.PRIORITY> -f /path/to/file/with/message
 FACILITIES='auth authpriv cron daemon ftp kern lpr mail news syslog user uucp local0 local1 local2 local3 local4 local5 local6 local7'
