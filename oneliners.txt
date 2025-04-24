@@ -257,12 +257,16 @@ request system storage cleanup dry-run
 request system reboot
 request system power-off
 
+kubectl get pods -A -o wide
+kubectl get nodes -o wide
+kubectl label node <NAME> <KEY>=<VALUE> (spec.template.spec.nodeSelector.<KEY>: <VALUE>)
 kubectl apply -f deployment.yaml
 kubectl get -n <NAMESPACE> deployment/<NAME>
 kubectl get -n <NAMESPACE> pods
 kubectl logs -n <NAMESPACE> deployment/<NAME> --follow
 kubectl exec -n <NAMESPACE> deployment/<NAME> -t -- <COMMAND>
 kubectl exec -n <NAMESPACE> deployment/<NAME> -it -- /bin/sh
+kubectl patch deployment/<NAME> --patch-file patch.yaml
 kubectl replace -f deployment.yaml --force
 kubectl delete -n <NAMESPACE> deployment/<NAME>
 
