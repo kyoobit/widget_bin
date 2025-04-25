@@ -264,6 +264,7 @@ kubectl apply -f deployment.yaml
 kubectl get -n <NAMESPACE> deployment/<NAME>
 kubectl get -n <NAMESPACE> pods
 kubectl logs -n <NAMESPACE> deployment/<NAME> --follow
+kubectl run alpine --image=alpine:latest -it --rm -- /bin/sh
 kubectl exec -n <NAMESPACE> deployment/<NAME> -t -- <COMMAND>
 kubectl exec -n <NAMESPACE> deployment/<NAME> -it -- /bin/sh
 kubectl patch deployment/<NAME> --patch-file patch.yaml
