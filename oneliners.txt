@@ -7,6 +7,13 @@ age --decryptt -i key.txt data.tar.gz.age > data.tar.gz
 
 apropos <WORD>
 
+## AWK|GAWK|MAWK|...
+free_kbytes_total=$(free --kibi --total | awk '/^Total:/ {print $2}')
+ps -eo rss,command --sort=-rss | awk -v total="$free_kbytes_total" '
+  NR==1 { printf "%6s %6s %s\n", "%MEM", "RSS", "COMMAND"; next }
+  $1 > 10240 { printf "%6.2f %6d %s\n", ($1/total*100), $1, substr($0, index($0, $2))}
+'
+
 ## BASH
 export LC_TIME='C.UTF-8';
 export PS1='[\D{%F %T}] \u@\h:\w\$ ';
