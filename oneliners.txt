@@ -110,6 +110,11 @@ diff -ub <(jq -S . <A>.json ) <(jq -S . <B>.json )
 dig +trace <FQDN> @<NS>
 dig <FQDN> +nocomments +noquestion +noauthority +noadditional +noststs (same as: +short?)
 
+dpkg -S dig | grep bin <--- like `dnf whatprovides dig`
+sudo dpkg-reconfigure tzdata || sudo timedatectl set-timezone Etc/UTC
+sudo dpkg-reconfigure -plow console-setup <--- console font size: Terminus 16x32
+sudo /bin/rm -v /etc/ssh/ssh_host_* && sudo dpkg-reconfigure openssh-server && sudo systemctl restart ssh <--- rekey a host
+
 echo "send a message" | wall
 
 ethtool <DEVICE>
