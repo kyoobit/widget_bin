@@ -574,11 +574,12 @@ pidstat
 
 ## Configure vi to search .bash_history: ESC + /
 echo "set -o vi" >> ~/.bash_profile && source ~/.bash_profile
-vi :10,20delete <--- delete lines 10 through 20
-vi :10,$delete  <--- delete from line 10 to the end of file
-vi :.,+4delete  <--- delete from current line and next 4 lines
-vi :set list    <--- show invisible characters (set: nolist)
-vi :set number  <--- show line numbers (set: nonumber)
+vi :10,20delete  <--- delete lines 10 through 20
+vi :10,$delete   <--- delete from line 10 to the end of file
+vi :.,+4delete   <--- delete from current line and next 4 lines
+vi :set list     <--- show invisible characters (set: nolist)
+vi :set number   <--- show line numbers (set: nonumber)
+vi :%s/abc/123/g <--- Find and replace abc with 123 globally
 
 sudo usermod --groups <GROUP> --append <USER>
 
