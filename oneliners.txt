@@ -228,6 +228,7 @@ sudo ip address add <ADDRESS>/24 dev bridge0
 sudo ip link set dev bridge0
 sudo ip link set dev bridge0 up
 sudo ip route add <DST ADDRESS> via <GATEWAY> dev <INTERFACE>
+sudo ip route change default via <GATEWAY> metric 100
 sudo ip link set <INTERFACE> down
 
 sudo iptables -n -L -v
