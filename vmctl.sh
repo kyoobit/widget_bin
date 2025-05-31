@@ -10,18 +10,17 @@ log() {
 
 check_gluster() {
     vm_name="${1}";
-    log "Checking glusterfs services on ${vm_name}...";
-    result=$(ssh -q "${name}" 'cat /mnt/data/is_working' | grep 'is working');
+    log "Checking glusterfs services on ${vm_name}";
+    printf -- "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
+    result=$(ssh -q "${vm_name}" 'cat /mnt/data/is_working 2>/dev/null');
     if [[ -z "${result}" ]]; then
         log "Restarting glusterfs services on ${vm_name}...";
-        printf -- "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
         ssh -q "${vm_name}" 'sudo systemctl restart glusterd';
-        sleep 10;
+        sleep 4;
         ssh -q "${vm_name}" 'sudo mount --all';
-        result=$(ssh -q "${name}" 'cat /mnt/data/is_working' | grep 'is working');
+        result=$(ssh -q "${name}" 'cat /mnt/data/is_working 2>/dev/null');
     fi
-    printf -- "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
-    log "${result}";
+    log "${result:-GlusterFS issue} on ${vm_name}";
 }
 
 check_hadoop() {
