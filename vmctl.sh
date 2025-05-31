@@ -34,6 +34,19 @@ check_kubernetes() {
     # ...not implemented yet
 }
 
+destroy() {
+    vm_name="${1}";
+    log "Destroy ${vm_name}...";
+    virsh destroy "${vm_name}";
+}
+
+poweroff() {
+    vm_name="${1}";
+    log "Shutdown ${vm_name}...";
+    # Send an ACPI shutdown signal (/sys/firmware/acpi)
+    virsh shutdown "${name}";
+}
+
 reboot() {
     vm_name="${1}";
     log "Rebooting ${vm_name}...";
@@ -43,8 +56,7 @@ reboot() {
 shutdown() {
     vm_name="${1}";
     log "Shutdown ${vm_name}...";
-    # Send an ACPI shutdown signal (/sys/firmware/acpi)
-    virsh shutdown "${name}";
+    ssh -q "${vm_name}" 'sudo systemctl poweroff';
 }
 
 start() {
@@ -57,9 +69,60 @@ update() {
     vm_name="${1}";
     log "Updating ${vm_name}...";
     ssh -q "${vm_name}" 'sudo apt-get update';
-    ssh -q "${vm_name}" 'sudo apt-get list --upgradable';
+    ssh -q "${vm_name}" 'apt list --upgradable 2>/dev/null';
     ssh -q "${vm_name}" 'sudo apt-get upgrade --yes';
 }
+
+help() {
+    _action="${1}";
+
+    # When _action is defined, ass-u-me the _action is unknown
+    if [[ -n "${_action}" ]]; then
+        printf "ERROR - Unknown action: ${_action}\n\n";
+    fi
+
+    printf "A simple script to perform common actions on one or more VMs.
+
+USAGE:
+  $(basename $0) 'ACTION' 'VM_NAME' ['VM_NAME' [...]]
+
+ACTIONS:
+
+  OS ACTIONS
+  update            issue 'apt-get update' and 'apt-get upgrade'
+  reboot            issue 'systemctl reboot'
+  shutdown          issue 'systemctl poweroff'
+
+  VIRT ACTIONS
+  start             issue 'virsh start'
+  poweroff          issue 'virsh shutdown' (ACPI shutdown signal)
+  destroy           issue 'virsh destroy' (forced poweroff)
+
+  HEALTH ACTIONS
+  check_gluster     Check the general health of glusterfs services
+  check_hadoop      Check the general health of Hadoop services
+  check_kubernetes  Check the general health of Kubernetes services
+
+~/.profile
+  ## WIDGETS!
+  ## git clone https://github.com/kyoobit/widget_bin.git
+  ## For silly VMs control
+  alias vmctl='\$HOME/widget_bin/vmctl.sh \$*';
+
+";
+
+    # When _action is defined, ass-u-me an error
+    if [[ -n "${_action}" ]]; then
+        exit 1;
+    else
+        exit 0;
+    fi
+}
+
+# Require at least two arguments: "ACTION" "VM_NAME" or call the "help" function
+if [[ "${#}" -lt "2" ]] || [[ "${1}" = '-h' ]] || [[ "${1}" = '--help' ]]; then
+    help "";
+fi
 
 # Check if virsh is installed
 command -v virsh >/dev/null 2>&1 || {
@@ -67,62 +130,16 @@ command -v virsh >/dev/null 2>&1 || {
     exit 1;
 }
 
-# Require at least one "ACTION" verb and one "VM_NAME"
-if [[ "${#}" -lt "2" ]] || [[ "${1}" = '-h' ]] || [[ "${1}" = '--help' ]]; then
-    printf "A simple script to perform some actions on one or more VMs.
-Usage:
-  $(basename $0) 'start|update|reboot|shutdown' 'VM_NAME' ['VM_NAME' [...]]
-  $(basename $0) 'check_(gluster|hadoop|kubernetes|...)' 'VM_NAME' ['VM_NAME' [...]]
-       \n";
-    exit 0;
-fi
+action="${1}";
 
-case ${1} in 
-    start)
-        shift 1;
-        for _arg in "${@}"; do
-            start "${_arg}";
-        done
-    ;;
-    update)
-        shift 1;
-        for _arg in "${@}"; do
-            update "${_arg}";
-        done
-    ;;
-    reboot)
-        shift 1;
-        for _arg in "${@}"; do
-            reboot "${_arg}";
-        done
-    ;;
-    shutdown)
-        shift 1;
-        for _arg in "${@}"; do
-            shutdown "${_arg}";
-        done
-    ;;
-    check_gluster)
-        shift 1;
-        for _arg in "${@}"; do
-            check_gluster "${_arg}";
-        done
-    ;;
-    check_hadoop)
-        shift 1;
-        for _arg in "${@}"; do
-            check_hadoop "${_arg}";
-        done
-    ;;
-    check_kubernetes)
-        shift 1;
-        for _arg in "${@}"; do
-            check_kubernetes "${_arg}";
-        done
-    ;;
-    *)
-        printf "Unknown action: ${1}\n" >&2;
-        printf "Should be one of: 'start|update|reboot|shutdown'\n";
-        exit 1;
-    ;;
-esac
+# Shift the action out of the arguments to pass to the function
+shift 1;
+
+# Check if the "action" function is defined, else call the "help" function
+if declare -f "${action}" > /dev/null 2>&1; then
+    for _arg in "${@}"; do
+        "$action" "${_arg}"
+    done
+else
+    help "${action}";
+fi
