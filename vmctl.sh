@@ -14,35 +14,41 @@ check_gluster() {
     result=$(ssh -q "${name}" 'cat /mnt/data/is_working' | grep 'is working');
     if [[ -z "${result}" ]]; then
         log "Restarting glusterfs services on ${vm_name}...";
+        printf "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
         ssh -q "${vm_name}" 'sudo systemctl restart glusterd';
         sleep 10;
-        ssh -q "${vm_name}" 'sudo mount -a';
+        ssh -q "${vm_name}" 'sudo mount --all';
         result=$(ssh -q "${name}" 'cat /mnt/data/is_working' | grep 'is working');
     fi
+    printf "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
     log "${result}";
 }
 
 check_hadoop() {
     vm_name="${1}";
     log "Checking hadoop services on ${vm_name}...";
+    printf "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
     # ...not implemented yet
 }
 
 check_kubernetes() {
     vm_name="${1}";
     log "Checking kubernetes services on ${vm_name}...";
+    printf "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
     # ...not implemented yet
 }
 
 destroy() {
     vm_name="${1}";
     log "Destroy ${vm_name}...";
+    printf "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
     virsh destroy "${vm_name}";
 }
 
 poweroff() {
     vm_name="${1}";
     log "Shutdown ${vm_name}...";
+    printf "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
     # Send an ACPI shutdown signal (/sys/firmware/acpi)
     virsh shutdown "${name}";
 }
@@ -50,12 +56,14 @@ poweroff() {
 reboot() {
     vm_name="${1}";
     log "Rebooting ${vm_name}...";
+    printf "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
     ssh -q "${vm_name}" 'sudo systemctl reboot';
 }
 
 shutdown() {
     vm_name="${1}";
     log "Shutdown ${vm_name}...";
+    printf "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
     ssh -q "${vm_name}" 'sudo systemctl poweroff';
 }
 
@@ -69,7 +77,9 @@ update() {
     vm_name="${1}";
     log "Updating ${vm_name}...";
     ssh -q "${vm_name}" 'sudo apt-get update';
+    printf "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
     ssh -q "${vm_name}" 'apt list --upgradable 2>/dev/null';
+    printf "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
     ssh -q "${vm_name}" 'sudo apt-get upgrade --yes';
 }
 
