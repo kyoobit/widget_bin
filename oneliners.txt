@@ -72,6 +72,7 @@ crontab (but you know you should use systemd timers instead)
 # |  |  |  |  |  TEST: env > ~/cronenv; env - `cat ~/cronenv` /bin/sh
 # *  *  *  *  *  <command to be executed> 2>&1 >> <always log>
 
+sudo dd if=/dev/zero of=/dev/sdj bs=1M status=progress <--- zero a disk to flush out sectors
 dd if=/path/to/some.iso of=/dev/disk4 bs=1m
 dd if=/dev/urandom of=test.obj bs=1M count=16 iflag=fullblock
 dd if=/dev/random bs=1024 count=102400 of=100MB.file
@@ -106,6 +107,7 @@ head -c 16M /dev/urandom > test.obj <--- like dd
 1 bits      (b)      1  bit   ............................ 0 || 1
 
 diff -ub <(jq -S . <A>.json ) <(jq -S . <B>.json )
+diff --from-file <A> <B> <C> ... <--- diff file A against one or more files
 
 dig +trace <FQDN> @<NS>
 dig <FQDN> +nocomments +noquestion +noauthority +noadditional +noststs (same as: +short?)
@@ -491,6 +493,8 @@ sudo salt 'NODE' saltutil.kill_job <JOB ID>
 sar -pd -n DEV,EDEV -u ALL 5 24 (disk,network,cpu activity every 5 seconds for 24 measurements)
 sar -dp (just disk activity)
 iostat -dmx (like sar -dp)
+sudo apt install --yes nvme-cli; sudo nvme smart-log /dev/nvme1n1
+sudo fio --name=nvme-test --filename=/dev/nvme1n1 --direct=1 --bs=4k --size=1G --numjobs=4 --time_based --runtime=60 --group_reporting
 
 sed -i '8i|thing|' <--- insert thing at line 8
 sed -i '8d' <--- delete line 8
@@ -526,6 +530,8 @@ sudo -iu root tcpdump -w filename [-c count] [-i interface] [-s snap-length] [ex
 sudo -iu root tcpdump -nnvvS net <ADDRESS> and src not <ADDRESS> and not <ADDRESS>
 sudo -iu root tcpdump -s 1600 -i any -nn tcp port <PORT> and host <ADDRESS> -Z <USER> -w ~<USER>/$(hostname)-$(date '+%s').pcap
 sudo -iu root tcpdump -s 1600 -i any -nn net <ADDRESS> and 'tcp[tcpflags] & (tcp-rst) != 0'
+sudo -iu root tcpdump -s 1600 -i any -nn 'not (src <ADDRESS> and port <PORT>)'
+
 
 ## Tmux Terminal Multiplexer
 ┌──────────────────────┐
