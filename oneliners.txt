@@ -310,6 +310,9 @@ lsblk
 sudo pvdisplay
 sudo vgdisplay
 sudo lvdisplay
+sudo pvcreate /dev/nvme0n1 /dev/nvme1n1 /dev/nvme2n1
+sudo vgcreate vg_data /dev/nvme0n1 /dev/nvme1n1
+sudo lvcreate --size 250G --name lv_lxd vg_data
 sudo lvresize --resizefs --size +<PE SIZE FREE - 0.1>G <LV PATH> --test
 lsblk --output MOUNTPOINT,UUID
 sudo vi /etc/fstab
@@ -321,14 +324,16 @@ lvm lvs --all
 mkdir /mnt/tmp_root
 mount /dev/<vg_name>/<lv_name> /mnt/tmp_root
 
-sudo lsof -i[TCP|UDP][@host][:port] # network connections for all processes
-sudo lsof -p <PID>                  # All open files for a specific PID
-sudo lsof -c <COMMAND>              # All open files for a specific command
-sudo lsof -u <USERNAME>             # All open files for a specific username
 
-## Lowercase
-tr '[:upper:]' '[:lower:]'
-awk '{print tolower($0)}'
+sudo lsof -i[TCP|UDP][@host][:port]  <--- network connections for all processes
+sudo lsof -p <PID>                   <--- All open files for a specific PID
+sudo lsof -c <COMMAND>               <--- All open files for a specific command
+sudo lsof -u <USERNAME>              <--- All open files for a specific username
+
+
+tr '[:upper:]' '[:lower:]'  <--- lowercase
+awk '{print tolower($0)}'   <--- lowercase
+
 
 lxc list
 lxc info <name>
@@ -375,8 +380,10 @@ lxc config set <name> security.protection.delete=true
 lxc config unset <name> security.protection.delete --property
 lxc delete <name>
 
+
 sudo -iu root mtr -rwc 15 <ADDRESS> (-r/--report-wide, -n/--no-dns)
 sudo -iu root mtr -rwnc 100 -4 -s 1472 <ADDRESS>
+
 
 ping -q -s 1472 -M do -c 10 <ADDRESS> (-s size MTU-28 <- IPv4 or MTU-48 <- IPv6) (-M do = prohibit fragmentation)
 sudo -iu root ping -q -s 1472 -M do -i .01 -c 2000 <ADDRESS>
@@ -385,23 +392,34 @@ ping: -M do = prohibit fragmentation
 nping --tcp-connect --dest-port 80 --count 100 --delay 100ms <ADDRESS>
 sudo -iu root traceroute -T -p 80 <ADDRESS>
 
-## Find a process by port using nestat|ss and ps
-netstat -nP -iTCP
-netstat -anv | grep <PORT>
-ps -Ao user,pid,command | grep -v grep | grep <PID>
 
-netstat --inet              # Connected sockets
-netstat --inet --listening  # Server sockets
-netstat --inet --all        # Both connected and server sockets
-netstat --inet ... -p       # Identify processes
+## Find a process by port using nestat and ps
+netstat -nP -iTCP           <--- tcp
+netstat -anv | grep <PORT>  <--- any protocol matching port, lists the <PID>
+ps -Ao user,pid,command | grep -v grep | grep <PID> <--- find <PID> for the port
+
+
+netstat --inet              <--- Connected sockets
+netstat --inet --listening  <--- Server sockets
+netstat --inet --all        <--- Both connected and server sockets
+netstat --inet ... -p       <--- Identify processes
+
 
 ## ss can be noisy and include more then what is required, use netstat instead
 netstat --tcp | awk '{states[\$NF]++} END {for (state in states) printf \"%s: %d\n\",state,states[state]}' | sort -nrk2"
+
 
 ## WTF state capture:
 ss -ant | tee ~/$(hostname).sockets.$(date '+%s')
 ps -ef | tee ~/$(hostname).ps.$(date '+%s')
 top -b -n 1 | tee ~/$(hostname).top.$(date '+%s')
+
+
+sudo exportfs -v                        <--- check nfs
+sudo systemctl status nfs-kernel-server <--- check nfs
+sudo showmount -e localhost             <--- check nfs
+df -h /srv/nfs                          <--- check nfs
+
 
 nftables - A modern Linux kernel packet classification framework - https://wiki.nftables.org/
 sudo nft list tables [<FAMILY:ip|arp|ip6|bridge|inet|netdev>]
@@ -419,6 +437,7 @@ sudo nft 'insert rule <TABLE> <CHAIN> position <INT> ...'
 sudo nft 'replace rule <TABLE> <CHAIN> handle <INT> ...'
 sudo nft 'delete rule <TABLE> <CHAIN> handle <INT>'
 
+
 nmcli connection show
 nmcli device show <INTERFACE>
 sudo nmcli connection add con-name vbr1s0 ifname vbr1s0 type bridge stp off
@@ -426,6 +445,7 @@ sudo nmcli connection modify vbr1s0 ipv4.addresses '<ADDRESS>/24'
 sudo nmcli connection modify vbr1s0 ipv4.gateway <ADDRESS>
 sudo nmcli connection modify vbr1s0 ipv4.dns <ADDRESS>
 sudo nmcli connection up vbr1s0
+
 
 echo | openssl s_client -connect <ADDRESS>:443 -servername <HOSTNAME> [-showcerts || -nextprotoneg '' || -tlsextdebug]
 echo | openssl s_client -connect <ADDRESS>:443 -servername <HOSTNAME> 2>&1 | openssl x509 -noout -subject -enddate
@@ -437,6 +457,7 @@ nmap --script ssl-cert --script-args=tls.servername=<HOST> <HOST|ADDRESS>
 Mozilla Certificate Authority (CA): https://wiki.mozilla.org/CA/Included_Certificates
 curl -sL https://ccadb-public.secure.force.com/mozilla/IncludedCACertificateReportCSVFormat | grep Apple
 
+
 sudo vi /etc/sysctl.d/50-enable-forwarding.conf
 sysctl net.ipv4.ip_forward
 echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward
@@ -446,20 +467,26 @@ echo 1 | sudo tee /proc/sys/net/ipv6/conf/default/forwarding
 net.ipv4.ip_forward=1
 net.ipv6.conf.all.forwarding=1
 
+
 ## Check for the need to reboot to finalize a security or kernel update:
 if [[ -s /var/run/reboot-required ]]; then cat /var/run/reboot-required; else echo "System reboot NOT required"; fi
 
-## Retry
-for i in {1..5}; do retry-some-command && break || sleep 10; done
 
-resolvectl status                    # dns system configuration
-sudo resolvectl statistics           # dns system statistics
-resolvectl query <HOSTNAME|ADDRESS>  # dns resolution
+## Retry forloop
+for i in {1..5}; do retry-some-command && break || sleep 10; done  <--- retry 5 times
+
+
+resolvectl status                    <--- dns system configuration
+sudo resolvectl statistics           <--- dns system statistics
+resolvectl query <HOSTNAME|ADDRESS>  <--- dns resolution
 resolvectl query --interface=vbr1s0 --type=AAAA --json=short <HOSTNAME|ADDRESS>
 
-rpcinfo -p [host]           # Dynamically assigned ports for RPC services
+
+rpcinfo -p [host]   <--- Dynamically assigned ports for RPC services
+
 
 rsync -avz -e "ssh -i /Users/some/.ssh/key" --dry-run /some/source/dir foo:~/some/target/dir/
+
 
 ## Saltiness
 sudo salt '<pattern>|*' <function>.<action> <arguments> --out json
@@ -490,16 +517,29 @@ sudo salt-run jobs.lookup_jid <JOB ID>
 sudo salt 'NODE' saltutil.running
 sudo salt 'NODE' saltutil.kill_job <JOB ID>
 
+
 sar -pd -n DEV,EDEV -u ALL 5 24 (disk,network,cpu activity every 5 seconds for 24 measurements)
 sar -dp (just disk activity)
 iostat -dmx (like sar -dp)
 sudo apt install --yes nvme-cli; sudo nvme smart-log /dev/nvme1n1
 sudo fio --name=nvme-test --filename=/dev/nvme1n1 --direct=1 --bs=4k --size=1G --numjobs=4 --time_based --runtime=60 --group_reporting
 
-sed -i '8i|thing|' <--- insert thing at line 8
-sed -i '8d' <--- delete line 8
+
+sed -i 's|foo|bar|g'  <--- s (substitute), g (global)
+sed -i 'y|abc|ABC|'   <--- y (transliterate), character-by-character like tr 'abc' 'ABC'
+sed '/pattern/d'      <--- d (delete)
+sed '/pattern/d'      <--- d (delete) lines matching pattern
+sed -i '8d'           <--- d (delete) line 8
+sed '1,5d'            <--- d (delete) lines 1-5
+sed '/start/,/end/d'  <--- d (delete) from start pattern to end pattern
+sed '/pattern/p'      <--- p (print)
+sed '/pattern/a\text' <--- a (append)
+sed '/pattern/i\text' <--- i (insert)
+sed -i '8i|thing|'    <--- i (insert) thing at line 8
+
 
 shred --verbose --force --zero --iterations 25 /dev/sda99
+
 
 ssh -L <PORT>:localhost:<PORT> -N -l <USER> <HOST|ADDRESS>
 ssh-keygen -t rsa -b 4096 -f /home/natroyer/.ssh/example_rsa
@@ -508,7 +548,9 @@ ssh-keygen -t ed25519 -f ~/.ssh/example_ed25519
 ssh-keygen -p -f ~/.ssh/example_ecdsa
 ssh-keygen -R <ADDRESS|HOSTNAME>
 
+
 stat --format='mtime:%y bytes:%s %n' /path/to/some/file
+
 
 strace -o output.trace <COMMAND>             # save trace output to a file
 strace -f -ff -o filename <COMMAND>          # save child trace process output to a separate file
@@ -516,14 +558,17 @@ strace -p <PID>                              # attach to a running process and t
 strace -e trace=network,read,write <COMMAND> # trace network system calls
 strace -e trace=read -e read=4 <COMMAND>     # print the transferred data in both hexadecimal and ASCII
 
+
 systemctl status
 systemctl list-units
 systemctl --failed
 
-## tar pipe:
-[ -d ${SOURCE} -a ! ${SOURCE} -ef ${TARGET} ]; tar cf - ${SOURCE} | (cd ${TARGET}; tar xvf -)
 
-<some command> | tee /dev/tty | <some command> <--- View the content on console
+[ -d ${SOURCE} -a ! ${SOURCE} -ef ${TARGET} ]; tar cf - ${SOURCE} | (cd ${TARGET}; tar xvf -)  <--- tar pipe
+
+
+<some command> | tee /dev/tty | <some command> <--- View the content on console and send to pipe
+
 
 sudo -iu root tcpdump -nn
 sudo -iu root tcpdump -w filename [-c count] [-i interface] [-s snap-length] [expression]
@@ -573,27 +618,39 @@ new-window -n <NAME> "command(s)"   <--- new window with name <NAME> running "co
 set-window-option synchronize-panes on <--- synchronize command entry on multiple panes
 tmux send-keys -t [session]:[window].[pane] 'command(s) to run' C-m
 
-top -b -n 1 -o +RES -E m -e m <--- top one shot sorted by RES memory
+
+top -b -n 1 -o +RES -E m -e m  <--- top 'one shot' sorted by RES memory
 top -c -u <USER>
 top -d 3 -n 5 -b -c
 mpstat -P ALL 3 1; vmstat 3 2; free -m;
 pidstat
 
+
 ## Configure vi to search .bash_history: ESC + /
 echo "set -o vi" >> ~/.bash_profile && source ~/.bash_profile
-vi :10,20delete  <--- delete lines 10 through 20
-vi :10,$delete   <--- delete from line 10 to the end of file
-vi :.,+4delete   <--- delete from current line and next 4 lines
-vi :set list     <--- show invisible characters (set: nolist)
-vi :set number   <--- show line numbers (set: nonumber)
-vi :%s/abc/123/g <--- Find and replace abc with 123 globally
+vi :10,20delete   <--- delete lines 10 through 20
+vi :10,$delete    <--- delete from line 10 to the end of file
+vi :.,+4delete    <--- delete from current line and next 4 lines
+vi :set list      <--- show invisible characters (set: nolist)
+vi :set number    <--- show line numbers (set: nonumber)
+vi :%s/abc/123/g  <--- Find and replace abc with 123 globally
 
-sudo usermod --groups <GROUP> --append <USER>
+
+for i in $(seq 899 -1 890); do getent passwd ${i}; getent group ${i}; done  <--- check for user/group ids in range 890-899
+sudo groupadd --system --gid 899 widgets
+sudo useradd --system --uid 899 --gid 899 --no-create-home --shell /usr/sbin/nologin --comment "Widget XYZ" widget-xyz
+sudo useradd --create-home --user-group user-xyz
+sudo usermod --append --groups widgets widget-xyz
+sudo groupmod --users widget-xyz,user-xyz widgets
+sudo userdel widget-xyz
+sudo groupdel widget-xyz
+
 
 watch -n <SECONDS> <COMMAND>
 watch -n 1 ip -s link show
 watch -n 2 'netstat –tulpnc'
 watch -n 2 'netstat -s | head -n 50'
+
 
 xargs -n 1 -P 20 -I{} ssh ... {} 'ionice -c 3 ...'
 xargs --max-args=1 --max-procs=20 -I{} ssh -q ... {} 'ionice -c 3 find ...'
