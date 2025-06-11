@@ -8,21 +8,6 @@ log() {
     printf "[$(date '+%Y-%m-%d %H:%M:%S')] INFO - ${*}\n";
 }
 
-check_gluster() {
-    vm_name="${1}";
-    log "Checking glusterfs services on ${vm_name}";
-    printf -- "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
-    result=$(ssh -q "${vm_name}" 'cat /mnt/data/is_working 2>/dev/null');
-    if [[ -z "${result}" ]]; then
-        log "Restarting glusterfs services on ${vm_name}...";
-        ssh -q "${vm_name}" 'sudo systemctl restart glusterd';
-        sleep 4;
-        ssh -q "${vm_name}" 'sudo mount --all';
-        result=$(ssh -q "${name}" 'cat /mnt/data/is_working 2>/dev/null');
-    fi
-    log "${result:-GlusterFS issue} on ${vm_name}";
-}
-
 check_hadoop() {
     vm_name="${1}";
     log "Checking hadoop services on ${vm_name}...";
@@ -49,7 +34,7 @@ poweroff() {
     log "Shutdown ${vm_name}...";
     printf -- "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - \n"
     # Send an ACPI shutdown signal (/sys/firmware/acpi)
-    virsh shutdown "${name}";
+    virsh shutdown "${vm_name}";
 }
 
 reboot() {
@@ -108,7 +93,6 @@ ACTIONS:
   destroy           issue 'virsh destroy' (forced poweroff)
 
   HEALTH ACTIONS
-  check_gluster     Check the general health of glusterfs services
   check_hadoop      Check the general health of Hadoop services
   check_kubernetes  Check the general health of Kubernetes services
 
