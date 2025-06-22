@@ -220,6 +220,15 @@ grep -oE "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" <--- IPv4-ish
 
 for n in {a..t}; do sudo hdparm -t /dev/sd${n}; done
 
+helm repo add <REPO> <URL>
+helm repo update
+helm search repo <REPO>/<CHART> --versions
+helm show values <REPO>/<CHART> > <NAME>-values.yaml
+helm install <NAME> <REPO>/<CHART> --namespace <NAME> --create-namespace -f <NAME>-values.yaml
+helm upgrade --install <NAME> <REPO>/<CHART> --namespace <NAME> --values <NAME>-values.yaml
+helm list --all-namespaces || helm list -A
+helm uninstall <NAME>
+
 sudo iperf3 --server --bind <ADDRESS> --affinity 1
 sudo iperf3 --client <DST ADDRESS> --bind <ADDRESS> --affinity 1
 sudo iperf3 --client <DST ADDRESS> --bind <ADDRESS> --udp --affinity 1
@@ -280,16 +289,20 @@ request system power-off
 
 kubectl get pods -A -o wide
 kubectl get nodes -o wide
+kubectl describe node
 kubectl label node <NAME> <KEY>=<VALUE> (spec.template.spec.nodeSelector.<KEY>: <VALUE>)
 kubectl apply -f deployment.yaml
+kubectl get -n <NAMESPACE> all
 kubectl get -n <NAMESPACE> <KIND>/<NAME>
 kubectl get -n <NAMESPACE> <KIND>/<NAME> -o yaml
-kubectl get -n <NAMESPACE> <KIND>/<NAME> -o=jsonpath='{.spec.clusterIPs[0]}'
 kubectl get -n <NAMESPACE> pods
+kubectl get -n <NAMESPACE> <KIND>/<NAME> -o jsonpath='{.data.something}'
+kubectl get -n <NAMESPACE> <KIND>/<NAME> -o jsonpath='{.spec.clusterIPs[0]}'
+kubectl get -n <NAMESPACE> secret/<NAME> -o jsonpath='{.data.password}' | base64 --decode | xxd
 kubectl events -n <NAMESPACE> <KIND>/<NAME> --follow
 kubectl logs -n <NAMESPACE> <NAME> --follow
 kubectl run <NAME> --image=<IMAGE:TAG> -it --rm -- /bin/sh
-kubectl run alpine --image=alpine:latest -it --rm -- /bin/sh
+kubectl run alpine --image=alpine:latest -it --rm --env="FOO=${BAR}" -- /bin/sh
 kubectl exec -n <NAMESPACE> deployment/<NAME> -it -- <COMMAND>
 kubectl exec -n <NAMESPACE> deployment/<NAME> -it -- /bin/sh
 kubectl patch deployment/<NAME> --patch-file patch.yaml
@@ -562,6 +575,7 @@ strace -e trace=read -e read=4 <COMMAND>     # print the transferred data in bot
 systemctl status
 systemctl list-units
 systemctl --failed
+sudo systemctl reset-failed
 
 
 [ -d ${SOURCE} -a ! ${SOURCE} -ef ${TARGET} ]; tar cf - ${SOURCE} | (cd ${TARGET}; tar xvf -)  <--- tar pipe
