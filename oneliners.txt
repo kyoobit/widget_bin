@@ -481,6 +481,37 @@ net.ipv4.ip_forward=1
 net.ipv6.conf.all.forwarding=1
 
 
+podman machine list
+podman machine init --now <NAME>
+podman machine init --cpus 4 --memory 2048 --disk-size 100 -v "${HOME}/projects":/shared/projects <NAME>
+podman machine inspect <NAME>
+podman system connection list
+podman system connection default <NAME>
+podman machine start <NAME>
+podman build --tag <TAG:VERSION> .
+podman images
+podman --connection <NAME> images
+podman run --rm --interactive --tty --publish <PORT>:<PORT>/tcp --name <NAME> <TAG:VERSION> <CMD:/bin/sh>
+podman run --rm -it alpine:latest /bin/sh
+podman run --rm --detach --publish <PORT>:<PORT>/tcp --name <NAME> <TAG:VERSION>
+podman run --rm -v /shared/projects/foo:/bar alpine:latest ls -la /bar
+podman run --rm "debian:bookworm-slim" bash -c 'numfmt --to iec $(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE))))' <--- 2.0G
+podman generate kube <NAME> > pod.yaml
+podman generate kube --service <NAME> > service.yaml
+sudo vi /etc/containers/registries.conf
+grep -v -E '^#|^$' /etc/containers/registries.conf
+[[registry]]
+prefix = "registry.lab"
+location = "registry.lab"
+insecure = true
+blocked = false
+podman tag localhost/<TAG:VERSION> registry.lab/<TAG:VERSION>
+podman push registry.lab/<TAG:VERSION>
+podman system prune --all
+podman machine stop <NAME>
+podman machine rm
+
+
 ## Check for the need to reboot to finalize a security or kernel update:
 if [[ -s /var/run/reboot-required ]]; then cat /var/run/reboot-required; else echo "System reboot NOT required"; fi
 
@@ -653,7 +684,7 @@ vi :%s/abc/123/g  <--- Find and replace abc with 123 globally
 for i in $(seq 899 -1 890); do getent passwd ${i}; getent group ${i}; done  <--- check for user/group ids in range 890-899
 sudo groupadd --system --gid 899 widgets
 sudo useradd --system --uid 899 --gid 899 --no-create-home --shell /usr/sbin/nologin --comment "Widget XYZ" widget-xyz
-sudo useradd --create-home --user-group user-xyz
+sudo useradd --create-home --user-group --shell /bin/bash user-xyz
 sudo usermod --append --groups widgets widget-xyz
 sudo groupmod --users widget-xyz,user-xyz widgets
 sudo userdel widget-xyz
