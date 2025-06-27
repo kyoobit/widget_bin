@@ -628,6 +628,26 @@ sudo -iu root tcpdump -s 1600 -i any -nn net <ADDRESS> and 'tcp[tcpflags] & (tcp
 sudo -iu root tcpdump -s 1600 -i any -nn 'not (src <ADDRESS> and port <PORT>)'
 
 
+terraform -chdir=/path/to/main.tf init
+terraform -chdir=/path/to/main.tf validate
+terraform -chdir=/path/to/main.tf plan
+terraform -chdir=/path/to/main.tf apply -auto-approve
+terraform -chdir=/path/to/main.tf destroy
+terraform -chdir=/path/to/main.tf apply -destroy -auto-approve
+
+sudo systemctl status cloud-init
+sudo systemctl status cloud-init-local
+sudo systemctl status cloud-init-network
+sudo systemctl status cloud-config
+sudo systemctl status cloud-final
+sudo cat /var/log/cloud-init-output.log
+sudo cat /var/log/cloud-init.log
+sudo cloud-init status --wait
+sudo cloud-init query ds
+sudo ls -l /var/lib/cloud/seed/nocloud/
+sudo cat /var/lib/cloud/seed/nocloud/user-data
+
+
 ## Tmux Terminal Multiplexer
 ┌──────────────────────┐
 │┌────────────────────┐│
@@ -694,6 +714,9 @@ sudo usermod --append --groups widgets widget-xyz
 sudo groupmod --users widget-xyz,user-xyz widgets
 sudo userdel widget-xyz
 sudo groupdel widget-xyz
+
+
+sudo apt install libguestfs-tools; sudo virt-customize -a /path/to/vm.qcow2 --ssh-inject ubuntu:string:"ssh-ed25519 ..."
 
 
 watch -n <SECONDS> <COMMAND>
