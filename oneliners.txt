@@ -538,19 +538,43 @@ rsync -avz -e "ssh -i /Users/some/.ssh/key" --dry-run /some/source/dir foo:~/som
 
 
 ## Saltiness
+* https://github.com/saltstack/
+* https://docs.saltproject.io/en/latest/py-modindex.html
+* https://docs.saltproject.io/en/latest/ref/states/all/index.html
+* https://docs.saltproject.io/en/latest/ref/states/all/salt.states.test.html <--- test.succeed_without_changes
+
 sudo salt '<pattern>|*' <function>.<action> <arguments> --out json
+
+sudo salt '*' state.show_sls some.thing <--- Verify file syntax
+sudo salt '*' cmd.run 'tail -100 /var/log/salt/minion | grep -i error'
+
+* https://docs.saltproject.io/en/latest/ref/modules/all/salt.modules.ipmi.html <--- ????
+
+# system
+sudo salt '*' service.restart <NAME.service>
+sudo salt '*' status.diskusage
+sudo salt '*' status.all_status --out json --out-file all_status.json
+sudo salt '*' network.interfaces
 
 sudo salt-run manage.status                     # List minions up/down (manage.up|alived|down)
 sudo salt '*' --preview-target
 sudo salt '*' test.ping|version                 # Ping (not ICMP) minions or show salt version
 sudo salt --pcre 'node[1-3]-(dev|qa)' test.ping # Match a PCRE pattern instead shell glob
 sudo salt --list 'node1,node3,node5' test.ping  # Match a comma-separated list of minions
+sudo salt '*' saltutil.refresh_pillar           # Refresh pillar
+sudo salt '*' pillar.items                      # 
 sudo salt --pillar 'role:prod*'                 # Match a pillar value to identify minions
 sudo salt --ipcidr '192.168.123.0/24'           # Match a CIRD or IP address
 
+sudo salt '*' file.list_backups /path/to/file   # Include: - backup: minion
+sudo salt '*' file.restore_backup /path/to/file 99 <--- rollback to 99, creates v 101
+sudo salt '*' file.delete_backup /path/to/file 100
+
 sudo salt '*' grains --doc
+sudo salt '*' saltutil.refresh_module           # Refresh grains
 sudo salt '*' grains.ls                         # List grains (minion system properties)
 sudo salt --grain os:Fedora grains.items        # Match all Fedora minions and list grain values (system properties)
+sudo salt '*' match.grain 'os:Debian'           # 
 sudo salt foo01 grains.setval deployment bar    # Set the grain deployment to a value (/etc/salt/grains)
 sudo salt foo01 grains.setval role ['bar', ...] # Set the grain role to a list of values (/etc/salt/grains)
 
