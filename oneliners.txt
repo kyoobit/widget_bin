@@ -200,12 +200,16 @@ git checkout production; git pull; git checkout staging; git merge production; g
 gpg --gen-random --armor 1 16
 gpg --dump-options
 gpg --rfc4880
-gpg --gen-key
+gpg --generate-key
+gpg --full-generate-key
 ## Generate an "armored" key in ASCII
-gpg --armour --export you@example.net > pubkey.asc
+gpg --import prikey.asc && shred -uvz prikey.asc
+gpg --list-secret-keys --keyid-format LONG
+gpg --armor --export-secret-keys you@example.net > prikey.asc
+gpg --armor --export you@example.net > pubkey.asc
 ## Encrypt a message:
 gpg --import pubkey.asc
-gpg --encrypt -r you@example.net --armour < in.txt -o out.txt
+gpg --encrypt --recipient you@example.net --armor < in.txt -o out.txt
 ## Sign a message:
 gpg --sign in.txt --output signed.sig
 gpg --clearsign in.txt
@@ -540,11 +544,15 @@ rsync -avz -e "ssh -i /Users/some/.ssh/key" --dry-run /some/source/dir foo:~/som
 ## Saltiness
 * https://github.com/saltstack/
 * https://docs.saltproject.io/en/latest/py-modindex.html
+* https://docs.saltproject.io/en/latest/ref/states/requisites.html
 * https://docs.saltproject.io/en/latest/ref/states/all/index.html
 * https://docs.saltproject.io/en/latest/ref/states/all/salt.states.test.html <--- test.succeed_without_changes
 
 sudo salt '<pattern>|*' <function>.<action> <arguments> --out json
 
+sudo salt '*' state.highstate           <--- Run the complete state tree defined in top.sls
+sudo salt '*' state.apply [state]       <--- Run a specific state or orchestration (preferred method)
+sudo salt '*' state.sls state           <--- Run a specific SLS file
 sudo salt '*' state.show_sls some.thing <--- Verify file syntax
 sudo salt '*' cmd.run 'tail -100 /var/log/salt/minion | grep -i error'
 
@@ -611,6 +619,7 @@ sed '/pattern/i\text' <--- i (insert)
 sed -i '8i|thing|'    <--- i (insert) thing at line 8
 
 
+brew install coreutils <--- shred
 shred --verbose --force --zero --iterations 25 /dev/sda99
 
 
