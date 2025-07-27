@@ -145,6 +145,8 @@ find /some/path -regextype posix-awk -regex ".*PATTERN.*" -type f -mmin -15
 
 sudo gdb <path to binary> <path to core file>
 
+geo: curl -i http://ip-api.com/json/${ADDRESS} | jq
+
 ## Gherkin issue template
 **As a** [role]
 **I need** [function]
@@ -312,6 +314,11 @@ kubectl exec -n <NAMESPACE> deployment/<NAME> -it -- /bin/sh
 kubectl patch deployment/<NAME> --patch-file patch.yaml
 kubectl replace -f deployment.yaml --force
 kubectl delete -n <NAMESPACE> deployment/<NAME>
+
+jinja string concatenation: "string1" ~ "string2"
+jinja string formatting:    "foo %s" % 'bar' or "foo {}".format(bar)
+jinja map filter:           items | map('attribute', 'key')
+jinja regex replace:        string | regex_replace('pattern', 'replacement')
 
 logger -t "<TAG>" -p <FACILITY.PRIORITY> "<MESSAGE>"
 logger -p <FACILITY.PRIORITY> -f /path/to/file/with/message
