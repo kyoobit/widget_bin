@@ -127,6 +127,8 @@ sudo firewall-cmd --get-zones
 sudo firewall-cmd --get-active-zones
 sudo firewall-cmd --set-default-zone=public
 sudo firewall-cmd --list-all
+sudo grep LogDenied /etc/firewalld/firewalld.conf
+sudo sed -i 's|LogDenied=off|LogDenied=all|' /etc/firewalld/firewalld.conf
 sudo firewall-cmd --reload
 
 sudo fdisk -l
@@ -226,6 +228,28 @@ grep -oE "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" <--- IPv4-ish
 
 for n in {a..t}; do sudo hdparm -t /dev/sd${n}; done
 
+
+sudo -u hdfs /usr/local/hadoop/bin/hdfs dfsadmin -report
+sudo -u hdfs /usr/local/hadoop/bin/hdfs --daemon status journalnode
+sudo -u hdfs /usr/local/hadoop/bin/hdfs --daemon status namenode
+sudo -u hdfs /usr/local/hadoop/bin/hdfs haadmin -getAllServiceState
+sudo -u hdfs /usr/local/hadoop/bin/hdfs haadmin -getServiceState mgm1
+sudo -u hdfs /usr/local/hadoop/bin/hdfs haadmin -checkHealth mgm1
+sudo -u hdfs /usr/local/hadoop/bin/hdfs haadmin -transitionToActive mgm1 --forcemanual
+sudo -u hdfs /usr/local/hadoop/bin/hdfs haadmin -transitionToStandby mgm2
+sudo -u hdfs /usr/local/hadoop/bin/hdfs haadmin -failover -forceactive mgm1 mgm2
+sudo -u yarn /usr/local/hadoop/bin/yarn rmadmin -getAllServiceState
+sudo -u yarn /usr/local/hadoop/bin/yarn rmadmin -checkHealth mgm1
+sudo -u yarn /usr/local/hadoop/bin/yarn rmadmin -getServiceState mgm1
+sudo -u yarn /usr/local/hadoop/bin/yarn rmadmin -transitionToActive mgm2 --forceactive
+sudo -u yarn /usr/local/hadoop/bin/yarn rmadmin -transitionToStandby --force mgm2
+sudo -u hdfs /usr/local/hadoop/bin/hdfs --daemon status zkfc
+sudo -u zookeeper /usr/local/zookeeper/bin/zkServer.sh --config /usr/local/zookeeper/conf status
+sudo -u hbase /usr/local/hadoop/bin/hadoop fs -dus /hbase/         <--- disk utilization for all HBase objects
+sudo -u hbase /usr/local/hadoop/bin/hadoop fs -dus /hbase/<TABLE>  <--- disk utilization for a HBase table
+sudo -u hbase /usr/local/hadoop/bin/hadoop fs -du  /hbase/<TABLE>  <--- disk utilization for a HBase table regions
+
+
 helm repo add <REPO> <URL>
 helm repo update
 helm search repo <REPO>/<CHART> --versions
@@ -245,6 +269,7 @@ sudo ip address add <ADDRESS>/24 dev bridge0
 sudo ip link set dev bridge0
 sudo ip link set dev bridge0 up
 sudo ip route add <DST ADDRESS> via <GATEWAY> dev <INTERFACE>
+sudo ip route add default via 192.168.100.1
 sudo ip route change default via <GATEWAY> metric 100
 sudo ip link set <INTERFACE> down
 
@@ -293,6 +318,13 @@ request system storage cleanup dry-run
 request system reboot
 request system power-off
 
+https://kubernetes.io/docs/reference/kubectl/generated/
+kubectl auth can-i <list|create|edit|delete> <RESOURCE|pods>
+kubectl config current-context
+kubectl config get-contexts
+kubectl config get-users
+kubectl config use-context <NAME>
+kubectl config view
 kubectl get pods -A -o wide
 kubectl get nodes -o wide
 kubectl describe node
@@ -313,7 +345,25 @@ kubectl exec -n <NAMESPACE> deployment/<NAME> -it -- <COMMAND>
 kubectl exec -n <NAMESPACE> deployment/<NAME> -it -- /bin/sh
 kubectl patch deployment/<NAME> --patch-file patch.yaml
 kubectl replace -f deployment.yaml --force
+kubectl rollout -n <NAMESPACE> restart deployment/<NAMES>    <--- handle jiggle
+kubectl scale -n <NAMESPACE> deployment/<NAME> --replicas=0  <--- handle jiggle
+kubectl scale -n <NAMESPACE> deployment/<NAME> --replicas=3  <--- handle jiggle
 kubectl delete -n <NAMESPACE> deployment/<NAME>
+kubectl cordon <NODE NAME>    <--- kube maintenance: prevent new pods
+kubectl drain <NODE NAME>     <--- kube maintenance: drain options
+  --ignore-daemonsets         <--- kube maintenance: skip daemonset pods (they should be running on all nodes)
+  --delete-emptydir-data      <--- kube maintenance: delete pods using emptydir volumes
+  --force                     <--- kube maintenance: force deletion of pods not managed by controllers
+  --grace-period=300          <--- kube maintenance: wait time before force-killing pods
+  --timeout=300s              <--- kube maintenance: maximum time to wait for drain to complete
+kubectl get pods --all-namespaces -o wide --field-selector spec.nodeName=<NODE NAME>  <--- maintenance: lingering pods?
+kubectl delete -n <NAMESPACE> pod/<NAME> --force --grace-period=0  <--- kube maintenance: remove lingering pod(s)
+sudo apt-get update && sudo apt-get upgrade --yes && sudo reboot  <--- kube maintenance: whatnot
+sudo dnf clean all && dnf upgrade -y && dnf needs-restarting && sudo reboot  <--- kube maintenance: whatnot
+sudo systemctl --failed       <--- kube maintenance: whatnot
+kubectl uncordon <NODE NAME>  <--- kube maintenance: allow new pods
+kubectl rollout -n <NAMESPACE> restart deployment/<NAMES>   <--- kube maintenance: rebalance pods
+
 
 jinja string concatenation: "string1" ~ "string2"
 jinja string formatting:    "foo %s" % 'bar' or "foo {}".format(bar)
@@ -462,13 +512,30 @@ sudo nft 'replace rule <TABLE> <CHAIN> handle <INT> ...'
 sudo nft 'delete rule <TABLE> <CHAIN> handle <INT>'
 
 
+nmcli general status
 nmcli connection show
+nmcli connection show --active
+nmcli device status
 nmcli device show <INTERFACE>
-sudo nmcli connection add con-name vbr1s0 ifname vbr1s0 type bridge stp off
-sudo nmcli connection modify vbr1s0 ipv4.addresses '<ADDRESS>/24'
-sudo nmcli connection modify vbr1s0 ipv4.gateway <ADDRESS>
-sudo nmcli connection modify vbr1s0 ipv4.dns <ADDRESS>
-sudo nmcli connection up vbr1s0
+sudo nmcli connection up|down id <CONNECTION NAME>
+sudo nmcli device disconnect|connect iface <INTERFACE>
+sudo nmcli connection edit con-name <CONNECTION NAME>   <--- edit new
+sudo nmcli connection edit <CONNECTION NAME>            <--- edit existing
+sudo nmcli connection delete id <CONNECTION NAME>
+nmcli radio wifi [on|off]
+nmcli device wifi list|rescan
+sudo nmcli device wifi connect <SSID|BSSID> password <PASSWORD>
+sudo nmcli connection add con-name br0 ifname br0 type bridge stp off
+sudo nmcli connection modify br0 ipv4.addresses '<ADDRESS>/24'
+sudo nmcli connection modify br0 ipv4.gateway <ADDRESS>
+sudo nmcli connection modify br0 ipv4.dns <ADDRESS>
+sudo nmcli connection up br0
+sudo nmcli connection modify <connection-name> +ipv4.routes "<NETWORK/CIRD> <GATEWAY> [<METRIC>]"
+sudo vi /etc/NetworkManager/system-connections/<INTERFACE>.nmconnection <--- Fedora/NetworkManager
++ route27=<NETWORK/CIRD>,<GATEWAY>[,<METRIC>]
+sudo nmcli connection reload
+sudo nmcli connection up <CONNECTION NAME>
+ip route show
 
 
 echo | openssl s_client -connect <ADDRESS>:443 -servername <HOSTNAME> [-showcerts || -nextprotoneg '' || -tlsextdebug]
@@ -559,6 +626,7 @@ sudo salt '<pattern>|*' <function>.<action> <arguments> --out json
 
 sudo salt '*' state.highstate           <--- Run the complete state tree defined in top.sls
 sudo salt '*' state.apply [state]       <--- Run a specific state or orchestration (preferred method)
+sudo salt '*' state.apply test=true --state-output=changes --state-verbose=False
 sudo salt '*' state.sls state           <--- Run a specific SLS file
 sudo salt '*' state.show_sls some.thing <--- Verify file syntax
 sudo salt '*' cmd.run 'tail -100 /var/log/salt/minion | grep -i error'
@@ -741,6 +809,7 @@ echo "set -o vi" >> ~/.bash_profile && source ~/.bash_profile
 vi :10,20delete   <--- delete lines 10 through 20
 vi :10,$delete    <--- delete from line 10 to the end of file
 vi :.,+4delete    <--- delete from current line and next 4 lines
+vi dgg            <--- delete from current line to the beginning of the file
 vi :set list      <--- show invisible characters (set: nolist)
 vi :set number    <--- show line numbers (set: nonumber)
 vi :%s/abc/123/g  <--- Find and replace abc with 123 globally
@@ -767,3 +836,5 @@ watch -n 2 'netstat -s | head -n 50'
 
 xargs -n 1 -P 20 -I{} ssh ... {} 'ionice -c 3 ...'
 xargs --max-args=1 --max-procs=20 -I{} ssh -q ... {} 'ionice -c 3 find ...'
+
+uptime && sudo dmesg | tail && sar -n DEV 1 && free -m && top && vmstat 1 && mpstat -P ALL 1 && pidstat 1 && iostat -xz 1
