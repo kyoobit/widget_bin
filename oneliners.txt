@@ -563,7 +563,18 @@ openssl passwd -6 '<PASSWORD>' <--- typically 5000 rounds?
 sudo apt install --yes whois; mkpasswd -m sha-512 -S 'saltness' -R 5000 '<PASSWORD>'
 pip install passlib; python3 -c "from passlib.hash import sha512_crypt; print(sha512_crypt.using(rounds=5000, salt='saltness').hash('<PASSWORD>'))"
 
-
+# install podman and configure the podrunner user account
+sudo apt install -y podman systemd-container <--- includes machinectl
+sudo useradd --create-home --user-group --shell /bin/bash podrunner
+echo "podrunner:100000:65536" | sudo tee -a /etc/subuid
+echo "podrunner:100000:65536" | sudo tee -a /etc/subgid
+sudo loginctl enable-linger podrunner
+sudo passwd -S podrunner <--- should be locked, e.g. podrunner L 2025-08-16 0 99999 7 -1
+sudo machinectl shell podrunner@.host /usr/bin/bash <--- "login" shell to podrunner
+sudo systemctl --user -M podrunner@ status <SERVICE>
+sudo journalctl --user -M podrunner@ -flu <SERVICE>
+# podman on macos via brew
+brew install podman
 podman machine list
 podman machine init --now <NAME>
 podman machine init --cpus 4 --memory 2048 --disk-size 100 -v "${HOME}/projects":/shared/projects <NAME>
