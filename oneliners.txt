@@ -55,11 +55,11 @@ EOF
 │ GROUP    │ <---  DIRECTION  ---> │ USAGE                                     │
 ├──────────┼───────────┬───────────┼───────────────────────────────────────────┤
 │          │ control+b │ control+f │ move one letter                           │
-│ MOVING   │ options+b │ options+f │ move one word                             │
+│ MOVING   │ option+b  │ option+f  │ move one word                             │
 │          │ control+a │ control+e │ move to start/end of line                 │
 ├──────────┼───────────┼───────────┼───────────────────────────────────────────┤
-│ DELETING │ control+w │ options+d │ delete one word                           │
-│ DELETING │ control+w │ options+d │ delete to start/end of line               │
+│ DELETING │ control+w │ option+d  │ delete one word                           │
+│ DELETING │ control+u │ control+k │ delete to start/end of line               │
 └──────────┴───────────┴───────────┴───────────────────────────────────────────┘
 
 crontab (but you know you should use systemd timers instead)
@@ -113,6 +113,7 @@ dig +trace <FQDN> @<NS>
 dig <FQDN> +nocomments +noquestion +noauthority +noadditional +noststs (same as: +short?)
 
 dpkg -S dig | grep bin <--- like `dnf whatprovides dig`
+sudo install apt-file && sudo apt-file update && apt-file search bin/dig <--- like `dnf whatprovides dig`
 sudo dpkg-reconfigure tzdata || sudo timedatectl set-timezone Etc/UTC
 sudo dpkg-reconfigure -plow console-setup <--- console font size: Terminus 16x32
 sudo /bin/rm -v /etc/ssh/ssh_host_* && sudo dpkg-reconfigure openssh-server && sudo systemctl restart ssh <--- rekey a host
@@ -564,6 +565,7 @@ sudo apt install --yes whois; mkpasswd -m sha-512 -S 'saltness' -R 5000 '<PASSWO
 pip install passlib; python3 -c "from passlib.hash import sha512_crypt; print(sha512_crypt.using(rounds=5000, salt='saltness').hash('<PASSWORD>'))"
 
 # install podman and configure the podrunner user account
+# https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html <--- quadlet-generated systemd units
 sudo apt install -y podman systemd-container <--- includes machinectl
 sudo useradd --create-home --user-group --shell /bin/bash podrunner
 echo "podrunner:100000:65536" | sudo tee -a /etc/subuid
