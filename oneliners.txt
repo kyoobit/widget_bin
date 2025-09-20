@@ -297,6 +297,8 @@ show system uptime
 show system commit
 show log messages | last 10
 show | compare rollback 1
+show configuration | display set
+show interfaces * terse | no-more
 show interfaces * terse | except \.
 show interfaces <PATTERN> | display set
 show interfaces <INTERFACE> statistics
@@ -351,6 +353,7 @@ kubectl scale -n <NAMESPACE> deployment/<NAME> --replicas=0  <--- handle jiggle
 kubectl scale -n <NAMESPACE> deployment/<NAME> --replicas=3  <--- handle jiggle
 kubectl delete -n <NAMESPACE> deployment/<NAME>
 kubectl cordon <NODE NAME>    <--- kube maintenance: prevent new pods
+kubectl drain <NODE NAME> --ignore-daemonsets --delete-emptydir-data --force --grace-period=300 --timeout=300s  <--- kube maintenance
 kubectl drain <NODE NAME>     <--- kube maintenance: drain options
   --ignore-daemonsets         <--- kube maintenance: skip daemonset pods (they should be running on all nodes)
   --delete-emptydir-data      <--- kube maintenance: delete pods using emptydir volumes
@@ -360,7 +363,7 @@ kubectl drain <NODE NAME>     <--- kube maintenance: drain options
 kubectl get pods --all-namespaces -o wide --field-selector spec.nodeName=<NODE NAME>  <--- maintenance: lingering pods?
 kubectl delete -n <NAMESPACE> pod/<NAME> --force --grace-period=0  <--- kube maintenance: remove lingering pod(s)
 sudo apt-get update && sudo apt-get upgrade --yes && sudo reboot  <--- kube maintenance: whatnot
-sudo dnf clean all && dnf upgrade -y && dnf needs-restarting && sudo reboot  <--- kube maintenance: whatnot
+sudo dnf clean all && sudo dnf upgrade -y && sudo dnf needs-restarting && sudo reboot  <--- kube maintenance: whatnot
 sudo systemctl --failed       <--- kube maintenance: whatnot
 kubectl uncordon <NODE NAME>  <--- kube maintenance: allow new pods
 kubectl rollout -n <NAMESPACE> restart deployment/<NAMES>   <--- kube maintenance: rebalance pods
