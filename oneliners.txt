@@ -148,7 +148,45 @@ find /some/path -regextype posix-awk -regex ".*PATTERN.*" -type f -mmin -15
 
 sudo gdb <path to binary> <path to core file>
 
+
+## Help message                                                      <--- getopt
+read -r -d '' help_message << EOM                                    <--- getopt
+usage: $(basename $0) [-h] [-a] [-b] [-c <value>] [<other>[ ...]]    <--- getopt
+                                                                     <--- getopt
+About...                                                             <--- getopt
+                                                                     <--- getopt
+arguments:                                                           <--- getopt
+  -h          Show this help message and exit.                       <--- getopt
+  -a          Some option without a value                            <--- getopt
+  -b          Another option without a value                         <--- getopt
+  -c <value>  Some option with a value                               <--- getopt
+  -v          Verbose mode                                           <--- getopt
+                                                                     <--- getopt
+Example usage:                                                       <--- getopt
+  $(basename $0) -a foo bar                                          <--- getopt
+EOM                                                                  <--- getopt
+                                                                     <--- getopt
+# Parse command-line arguments using getopt                          <--- getopt
+# getopt [options] -o|--options optstring [options] [--] parameters  <--- getopt
+# https://www.man7.org/linux/man-pages/man1/getopt.1.html            <--- getopt
+while getopts 'habc:v' opt; do                                       <--- getopt
+    case "${opt}" in                                                 <--- getopt
+        h ) printf "${help_message}\n\n"; exit 0;;                   <--- getopt
+        a ) x="x";;                                                  <--- getopt
+        b ) y="y";;                                                  <--- getopt
+        c ) z="${OPTARG}";;                                          <--- getopt
+        v ) verbose="verbose";;                                      <--- getopt
+    esac                                                             <--- getopt
+done                                                                 <--- getopt
+# Shift off the arguments from the path(s)                           <--- getopt
+shift "$((OPTIND - 1))";                                             <--- getopt
+for other_arg in "${@}"; do                                          <--- getopt
+    printf "other_arg=${other_arg}\n"                                <--- getopt
+done                                                                 <--- getopt
+
+
 geo: curl -i http://ip-api.com/json/${ADDRESS} | jq
+
 
 ## Gherkin issue template
 **As a** [role]
