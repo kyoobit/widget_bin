@@ -567,6 +567,12 @@ openssl passwd -6 '<PASSWORD>' <--- typically 5000 rounds?
 sudo apt install --yes whois; mkpasswd -m sha-512 -S 'saltness' -R 5000 '<PASSWORD>'
 pip install passlib; python3 -c "from passlib.hash import sha512_crypt; print(sha512_crypt.using(rounds=5000, salt='saltness').hash('<PASSWORD>'))"
 
+
+[git] diff -u file.ext > file.ext.patch <--- create a unified patch
+patch --verbose file.ext file.ext.patch <--- apply or reverse a [unified] patch
+patch --verbose --input file.ext.patch --output file.ext.patched file.ext 
+
+
 # install podman and configure the podrunner user account
 # https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html <--- quadlet-generated systemd units
 sudo apt install -y podman systemd-container <--- includes machinectl
