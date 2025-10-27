@@ -307,9 +307,10 @@ sudo ip link set <INTERFACE> master bridge0
 sudo ip address add <ADDRESS>/24 dev bridge0
 sudo ip link set dev bridge0
 sudo ip link set dev bridge0 up
-sudo ip route add <DST ADDRESS> via <GATEWAY> dev <INTERFACE>
-sudo ip route add default via 192.168.100.1
-sudo ip route change default via <GATEWAY> metric 100
+sudo ip route del <DST ADDRESS> via <GATEWAY> dev <INTERFACE>
+sudo ip route add <DST ADDRESS> via <GATEWAY> dev <INTERFACE> metric 100
+sudo ip route add default via <GATEWAY>
+sudo ip route change default via <GATEWAY> dev <INTERFACE> metric 100
 sudo ip link set <INTERFACE> down
 
 sudo iptables -n -L -v
@@ -439,6 +440,9 @@ vgchange -a y "<vg_name>"
 lvm lvs --all
 mkdir /mnt/tmp_root
 mount /dev/<vg_name>/<lv_name> /mnt/tmp_root
+
+
+sudo lshw -class memory -json
 
 
 sudo lsof -i[TCP|UDP][@host][:port]  <--- network connections for all processes
@@ -578,7 +582,9 @@ sudo vi /etc/NetworkManager/system-connections/<INTERFACE>.nmconnection <--- Fed
 sudo nmcli connection reload
 sudo nmcli connection up <CONNECTION NAME>
 ip route show
-
+sudo ip route add 192.168.100.123/32 via 192.168.100.1 dev en0 <--- force a route
+ip neigh show <--- instead of arp -a
+sudo ip neigh del 192.168.100.123 dev en0 <--- remove a route
 
 echo | openssl s_client -connect <ADDRESS>:443 -servername <HOSTNAME> [-showcerts || -nextprotoneg '' || -tlsextdebug]
 echo | openssl s_client -connect <ADDRESS>:443 -servername <HOSTNAME> 2>&1 | openssl x509 -noout -subject -enddate
@@ -650,6 +656,9 @@ insecure = true
 blocked = false
 podman tag localhost/<TAG:VERSION> registry.lab/<TAG:VERSION>
 podman push registry.lab/<TAG:VERSION>
+podman save --output image.tar <TAG:VERSION>
+podman save --compress --format docker-dir --output <DIR> <TAG:VERSION> && tar cf <DIR>.tar <DIR>
+cat <DIR>.tar | podman import - <TAG:VERSION>
 podman system prune --all
 podman machine stop <NAME>
 podman machine rm
