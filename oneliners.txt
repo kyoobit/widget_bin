@@ -128,6 +128,10 @@ sudo firewall-cmd --get-zones
 sudo firewall-cmd --get-active-zones
 sudo firewall-cmd --set-default-zone=public
 sudo firewall-cmd --list-all
+ls /usr/lib/firewalld/services/
+sudo firewall-cmd --permanent --zone=public --add-service=https
+sudo firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address="192.168.100.0/24" port port="123" protocol="tcp" accept'
+sudo firewall-cmd --permanent --zone=public --remove-rich-rule='rule family="ipv4" source address="192.168.100.0/24" port port="123" protocol="tcp" accept'
 sudo grep LogDenied /etc/firewalld/firewalld.conf
 sudo sed -i 's|LogDenied=off|LogDenied=all|' /etc/firewalld/firewalld.conf
 sudo firewall-cmd --reload
@@ -240,6 +244,7 @@ git push
 git checkout production; git pull; git checkout staging; git merge production; git pull (sync from prod to staging)
 
 ## GPG - GNU Privacy Guard (PGP): ~/.gnupg
+gpg --list-keys
 gpg --gen-random --armor 1 16
 gpg --dump-options
 gpg --rfc4880
@@ -776,6 +781,12 @@ ssh-keygen -R <ADDRESS|HOSTNAME>
 
 
 stat --format='mtime:%y bytes:%s %n' /path/to/some/file
+
+
+sudo apt-get install --yes smartmontools
+sudo smartctl --test long /dev/sda
+sudo smartctl --capabilities /dev/sda
+sudo smartctl --all /dev/sda
 
 
 strace -o output.trace <COMMAND>             # save trace output to a file
