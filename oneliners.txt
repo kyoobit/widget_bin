@@ -50,6 +50,12 @@ cat << EOF > some-file.txt
 Multi-line blob of text
 EOF
 
+
+# sudo apt install --yes python3-bcrypt || python3 -m pip install bcrypt
+BCRYPT_HASH=$(python3 -c "import bcrypt; print(bcrypt.hashpw(b'<PASSWORD>', bcrypt.gensalt()).decode('utf-8'))");
+BCRYPT_HASH=$(htpasswd -bnBC 10 "" '<PASSWORD>' | tr -d ':\n');
+
+
 ## Command-Line move and delete commands:
 ┌──────────┬───────────────────────┬───────────────────────────────────────────┐
 │ GROUP    │ <---  DIRECTION  ---> │ USAGE                                     │
