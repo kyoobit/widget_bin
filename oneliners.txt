@@ -906,6 +906,9 @@ vi :set number    <--- show line numbers (set: nonumber)
 vi :%s/abc/123/g  <--- Find and replace abc with 123 globally
 
 
+echo 'set mouse-=a " Disable mouse usage (all modes)' >> ~/.vimrc
+
+
 for i in $(seq 899 -1 890); do getent passwd ${i}; getent group ${i}; done  <--- check for user/group ids in range 890-899
 sudo groupadd --system --gid 899 widgets
 sudo useradd --system --uid 899 --gid 899 --no-create-home --shell /usr/sbin/nologin --comment "Widget XYZ" widget-xyz
@@ -917,6 +920,19 @@ sudo groupdel widget-xyz
 
 
 sudo apt install libguestfs-tools; sudo virt-customize -a /path/to/vm.qcow2 --ssh-inject ubuntu:string:"ssh-ed25519 ..."
+
+
+uv --version || curl -LsSf https://astral.sh/uv/install.sh | sh
+uv self update
+uv init --no-readme
+uv venv my_venv && source my_venv/bin/activate
+uv add --upgrade --requirements requirements.txt
+uv add --upgrade --requirements requirements-ci.txt --dev
+uv sync --all-extras --dev --frozen
+uv run ruff format *.py
+uv run ruff check *.py
+uv run coverage run -m pytest -v tests/*.py && uv run coverage report -m
+uv run --python /path/to/my_venv/bin/python widget.py
 
 
 watch -n <SECONDS> <COMMAND>
