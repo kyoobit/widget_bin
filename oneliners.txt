@@ -372,16 +372,28 @@ request system reboot
 request system power-off
 
 https://kubernetes.io/docs/reference/kubectl/generated/
+kubectl cluster-info
 kubectl auth can-i <list|create|edit|delete> <RESOURCE|pods>
+kubectl api-resources --sort-by name -o wide    <--- show all API resources and supported verbs
 kubectl config current-context
 kubectl config get-contexts
 kubectl config get-users
 kubectl config use-context <NAME>
 kubectl config view
+kubectl config view --raw -o json | jq ...
+kubectl get roles
+kubectl get rolebindings
+kubectl get clusterroles
+kubectl get clusterrolebindings
+kubectl describe clusterrole <role>
 kubectl get pods -A -o wide
 kubectl get nodes -o wide
 kubectl describe node
 kubectl label node <NAME> <KEY>=<VALUE> (spec.template.spec.nodeSelector.<KEY>: <VALUE>)
+kubectl create namespace <NAME>
+kubectl label --overwrite namespace <NAME> pod-security.kubernetes.io/enforce=baseline
+kubectl label --overwrite namespace <NAME> pod-security.kubernetes.io/warn=restricted
+kubectl label --overwrite namespace <NAME> pod-security.kubernetes.io/audit=restricted
 kubectl apply -f deployment.yaml
 kubectl get -n <NAMESPACE> all
 kubectl get -n <NAMESPACE> <KIND>/<NAME>
@@ -451,6 +463,8 @@ vgchange -a y "<vg_name>"
 lvm lvs --all
 mkdir /mnt/tmp_root
 mount /dev/<vg_name>/<lv_name> /mnt/tmp_root
+mount --bind /foo /bar
+mount -o remount,bind,ro /foo /bar  <--- read-only mountpoint (VFS entry), original filesystem superblock remains writable
 
 
 sudo lshw -class memory -json
