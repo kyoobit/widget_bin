@@ -552,6 +552,9 @@ netstat --inet --all        <--- Both connected and server sockets
 netstat --inet ... -p       <--- Identify processes
 
 
+nohup <command> > file.log
+
+
 ## ss can be noisy and include more then what is required, use netstat instead
 netstat --tcp | awk '{states[\$NF]++} END {for (state in states) printf \"%s: %d\n\",state,states[state]}' | sort -nrk2"
 
@@ -613,6 +616,7 @@ sudo ip route add 192.168.100.123/32 via 192.168.100.1 dev en0 <--- force a rout
 ip neigh show <--- instead of arp -a
 sudo ip neigh del 192.168.100.123 dev en0 <--- remove a route
 
+
 echo | openssl s_client -connect <ADDRESS>:443 -servername <HOSTNAME> [-showcerts || -nextprotoneg '' || -tlsextdebug]
 echo | openssl s_client -connect <ADDRESS>:443 -servername <HOSTNAME> 2>&1 | openssl x509 -noout -subject -enddate
 echo | openssl s_client -connect <ADDRESS>:443 | tee /dev/tty | openssl x509 -noout -dates
@@ -622,6 +626,37 @@ nmap --script ssl-enum-ciphers -p 443 --script-args=tls.servername=<HOST> <HOST|
 nmap --script ssl-cert --script-args=tls.servername=<HOST> <HOST|ADDRESS>
 Mozilla Certificate Authority (CA): https://wiki.mozilla.org/CA/Included_Certificates
 curl -sL https://ccadb-public.secure.force.com/mozilla/IncludedCACertificateReportCSVFormat | grep Apple
+
+cat > my.cnf <<EOF                                              <--- openssl cnf
+[ req ]                                                         <--- openssl cnf
+distinguished_name = req_distinguished_name                     <--- openssl cnf
+req_extensions = v3_req                                         <--- openssl cnf
+prompt = no                                                     <--- openssl cnf
+                                                                <--- openssl cnf
+[ req_distinguished_name ]                                      <--- openssl cnf
+commonName = foo.bar.net                                        <--- openssl cnf
+                                                                <--- openssl cnf
+[ v3_req ]                                                      <--- openssl cnf
+basicConstraints = CA:FALSE                                     <--- openssl cnf
+keyUsage = nonRepudiation, digitalSignature, keyEncipherment    <--- openssl cnf
+extendedKeyUsage = serverAuth, clientAuth                       <--- openssl cnf
+subjectAltName = @alt_names                                     <--- openssl cnf
+                                                                <--- openssl cnf
+[alt_names]                                                     <--- openssl cnf
+DNS.1 = foo.net                                                 <--- openssl cnf
+DNS.2 = bar.net                                                 <--- openssl cnf
+EOF                                                             <--- openssl cnf
+
+openssl ecparam -name prime256v1 -genkey -noout my.key
+openssl req -new -outform PEM -out my.csr -key my.key -config my.cnf
+openssl x509 -req -in my.csr -days 720 -signkey my.key -sha256 -extfile my.cnf -extensions v3_req -out my.crt  <--- self-signed
+cat my.key > my.pem && openssl x509 -subject -dates -in my.crt >> my.pem
+
+openssl req -outform PEM -out my.csr -newkey ec:<(openssl ecparam -name prime256v1) -sha256 -keyout my.key -config my.cnf
+openssl x509 -req -days 365 -in my.csr -signkey my.key -out my.crt  <--- self-signed
+openssl x509 -subject -dates -in my.crt > my.pem
+openssl ec -in my.key >> my.pem  <--- bad, bad, bad, set a passphrase!
+rm my.{crt,csr,key} <--- deploy the pem and remove working files
 
 
 sudo vi /etc/sysctl.d/50-enable-forwarding.conf
