@@ -709,15 +709,18 @@ podman run --rm -v /shared/projects/foo:/bar alpine:latest ls -la /bar
 podman run --rm "debian:bookworm-slim" bash -c 'numfmt --to iec $(echo $(($(getconf _PHYS_PAGES) * $(getconf PAGE_SIZE))))' <--- 2.0G
 podman generate kube <NAME> > pod.yaml
 podman generate kube --service <NAME> > service.yaml
-sudo vi /etc/containers/registries.conf
-grep -v -E '^#|^$' /etc/containers/registries.conf
-[[registry]]
-prefix = "registry.lab"
-location = "registry.lab"
-insecure = true
-blocked = false
-podman tag localhost/<TAG:VERSION> registry.lab/<TAG:VERSION>
-podman push registry.lab/<TAG:VERSION>
+sudo vi /etc/containers/registries.conf                        <--- container registry
+grep -v -E '^#|^$' /etc/containers/registries.conf             <--- container registry
+[[registry]]                                                   <--- container registry
+prefix = "registry.lab"                                        <--- container registry
+location = "registry.lab"                                      <--- container registry
+insecure = true                                                <--- container registry
+blocked = false                                                <--- container registry
+podman tag localhost/<TAG:VERSION> registry.lab/<TAG:VERSION>  <--- container registry
+podman push registry.lab/<TAG:VERSION>                         <--- container registry
+podman cp some-container:/path/in/container /path/on/host
+podman cp /path/on/host some-container:/path/in/container
+podman exec some-container tar -C /var/log -czf - app*.log | tar -xzf - -C /tmp/  <--- tar pipe export
 podman save --output image.tar <TAG:VERSION>
 podman save --compress --format docker-dir --output <DIR> <TAG:VERSION> && tar cf <DIR>.tar <DIR>
 cat <DIR>.tar | podman import - <TAG:VERSION>
