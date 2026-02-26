@@ -748,6 +748,10 @@ resolvectl query <HOSTNAME|ADDRESS>  <--- dns resolution
 resolvectl query --interface=vbr1s0 --type=AAAA --json=short <HOSTNAME|ADDRESS>
 
 
+echo 3 | sudo tee /sys/class/graphics/fbcon/rotate  <--- Temp rotate the console monitor: 0 (normal), 1 (90°), 2 (180°), 3 (270°)
+Add fbcon=rotate:3 in /boot/firmware/cmdline.txt    <--- Permanent rotate the console monitor
+
+
 rpcinfo -p [host]   <--- Dynamically assigned ports for RPC services
 
 
@@ -949,8 +953,8 @@ mpstat -P ALL 3 1; vmstat 3 2; free -m;
 pidstat
 
 
-## Configure vi to search .bash_history: ESC + /
-echo "set -o vi" >> ~/.bash_profile && source ~/.bash_profile
+echo "set -o vi" >> ~/.bash_profile && source ~/.bash_profile      <--- Configure vi to search .bash_history: ESC + /
+echo 'set mouse-=a " Disable mouse usage (all modes)' >> ~/.vimrc  <--- Disable "fancy" editing with vim
 vi :10,20delete   <--- delete lines 10 through 20
 vi :10,$delete    <--- delete from line 10 to the end of file
 vi :.,+4delete    <--- delete from current line and next 4 lines
@@ -958,9 +962,6 @@ vi dgg            <--- delete from current line to the beginning of the file
 vi :set list      <--- show invisible characters (set: nolist)
 vi :set number    <--- show line numbers (set: nonumber)
 vi :%s/abc/123/g  <--- Find and replace abc with 123 globally
-
-
-echo 'set mouse-=a " Disable mouse usage (all modes)' >> ~/.vimrc
 
 
 for i in $(seq 899 -1 890); do getent passwd ${i}; getent group ${i}; done  <--- check for user/group ids in range 890-899
