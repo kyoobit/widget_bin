@@ -681,6 +681,7 @@ patch --verbose --input file.ext.patch --output file.ext.patched file.ext
 
 # install podman and configure the podrunner user account
 # https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html <--- quadlet-generated systemd units
+# also: export KIND_EXPERIMENTAL_PROVIDER=podman
 sudo apt install -y podman systemd-container <--- includes machinectl
 sudo useradd --create-home --user-group --shell /bin/bash podrunner
 echo "podrunner:100000:65536" | sudo tee -a /etc/subuid
@@ -695,6 +696,8 @@ brew install podman
 podman machine list
 podman machine init --now <NAME>
 podman machine init --cpus 4 --memory 2048 --disk-size 100 -v "${HOME}/projects":/shared/projects <NAME>
+# rootful is needed to access eBPF (default is rootless in podman)
+podman machine init --rootful --now <NAME>
 podman machine inspect <NAME>
 podman system connection list
 podman system connection default <NAME>
@@ -735,7 +738,7 @@ curl https://bootstrap.pypa.io/get-pip.py | python && python -m pip install -r r
 
 
 ## Check for the need to reboot to finalize a security or kernel update:
-if [[ -s /var/run/reboot-required ]]; then cat /var/run/reboot-required; else echo "System reboot NOT required"; fi
+if [[ -f /var/run/reboot-required ]]; then cat /var/run/reboot-required; else echo "System reboot NOT required"; fi
 
 
 ## Retry forloop
