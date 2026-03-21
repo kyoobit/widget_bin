@@ -702,7 +702,7 @@ podman machine inspect <NAME>
 podman system connection list
 podman system connection default <NAME>
 podman machine start <NAME>
-podman build --tag <TAG:VERSION> .
+podman build --no-cache --tag <TAG:VERSION> .
 podman images
 podman --connection <NAME> images
 podman run --rm --interactive --tty --publish <PORT>:<PORT>/tcp --name <NAME> <TAG:VERSION> <CMD:/bin/sh>
