@@ -927,25 +927,28 @@ tmux ls
 tmux attach                               <--- attach the first session
 tmux attach -t <NAME>                     <--- attach a session by name
 tmux kill-session -t <NAME>
-Prefix ? <--- list predefined keybindings and associated commands
-Prefix $ <--- rename session
-Prefix d <--- detach session
-Prefix c <--- create a new window
-Prefix , <--- rename window
-Prefix w <--- list of windows with a preview
-Prefix f <--- find a window by name
-Prefix <ARROW>  <--- move to window pane in direction of <ARROW>
-Prefix ! <--- create a window from the window active pane
-Prefix z <--- enter/exit full window zoom of a window pane
-Prefix : <--- enter command mode
-Prefix [ <--- enter copy mode (use q to exit), ...arrow around
-even-horizontal      <--- stack all panes horizontally, left to right
-even-vertical        <--- stack all panes vertically, top to bottom
-main-horizontal      <--- create one larger pane on the top and smaller panes underneath
-main-vertical        <--- creates one large pane on the left side of the screen, stacks the rest vertically on the right
-new-window -n <NAME> <--- new window with name <NAME>
-new-window -n <NAME> "command(s)"   <--- new window with name <NAME> running "command(s)", window closes when command exits
-set-window-option synchronize-panes on <--- synchronize command entry on multiple panes
+Prefix ? <--- tmux: list predefined keybindings and associated commands
+Prefix $ <--- tmux: rename session
+Prefix d <--- tmux: detach session
+Prefix c <--- tmux: create a new window
+Prefix , <--- tmux: rename window
+Prefix w <--- tmux: list of windows with a preview
+Prefix f <--- tmux: find a window by name
+Prefix <ARROW>  <--- tmux: move to window pane in direction of <ARROW>
+Prefix ! <--- tmux: create a window from the window active pane
+Prefix z <--- tmux: enter/exit full window zoom of a window pane
+Prefix : <--- tmux: enter command mode
+Prefix [ <--- tmux: enter copy mode (use q to exit), ...arrow around
+Prefix % (split-window -v) <--- tmux: split panel vertically
+Prefix " (split-window -h) <--- tmux: split panel horizontally
+Prefix x <--- tmux: close current window
+even-horizontal      <--- tmux: stack all panes horizontally, left to right
+even-vertical        <--- tmux: stack all panes vertically, top to bottom
+main-horizontal      <--- tmux: create one larger pane on the top and smaller panes underneath
+main-vertical        <--- tmux: creates one large pane on the left side of the screen, stacks the rest vertically on the right
+new-window -n <NAME> <--- tmux: new window with name <NAME>
+new-window -n <NAME> "command(s)"   <--- tmux: new window with name <NAME> running "command(s)", window closes when command exits
+set-window-option synchronize-panes on <--- tmux: synchronize command entry on multiple panes
 tmux send-keys -t [session]:[window].[pane] 'command(s) to run' C-m
 
 
@@ -963,7 +966,9 @@ vi :10,$delete    <--- delete from line 10 to the end of file
 vi :.,+4delete    <--- delete from current line and next 4 lines
 vi dgg            <--- delete from current line to the beginning of the file
 vi :set list      <--- show invisible characters (set: nolist)
+vi :set mouse=    <--- disable mouse support
 vi :set number    <--- show line numbers (set: nonumber)
+vi :set paste     <--- turn off auto-indent (set: nopaste)
 vi :%s/abc/123/g  <--- Find and replace abc with 123 globally
 
 
