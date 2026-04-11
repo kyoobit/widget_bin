@@ -336,6 +336,7 @@ help topic ?
 help reference ?
 help apropos ?
 help syslog <TAG>
+show log messages | last 10
 show chassis fabric summary
 show chassis environment
 show chassis power
@@ -347,16 +348,23 @@ show system alarms
 show system core-dumps
 show system uptime
 show system commit
-show log messages | last 10
+show system connections extensive    <--- current state of TCP sessions
 show | compare rollback 1
 show configuration | display set
 show interfaces * terse | no-more
 show interfaces * terse | except \.
 show interfaces <PATTERN> | display set
 show interfaces <INTERFACE> statistics
-show route <ADDRESS[/SUBNET]> detail # lower number has priority
+show route instance detail
+show route <ADDRESS[/SUBNET]> detail  <--- lower number has priority
 show route forwarding-table
-show route table
+show route table inet.0
+set static route 0.0.0.0/0 next-hop <GATEWAY ADDRESS>  <--- default static route
+set static route <ADDRESS[/SUBNET]> next-hop <GATEWAY ADDRESS>
+set static route <ADDRESS[/SUBNET]> discard  <--- blackholing route
+show ospf route                        <--- ospf: open shortest route path first
+show bgp neighbor <ADDRESS>
+show rip neighbor
 show ethernet-switching table | match <MAC>
 show lacp interfaces <LABLE> extensive
 show firewall log
@@ -730,6 +738,17 @@ cat <DIR>.tar | podman import - <TAG:VERSION>
 podman system prune --all
 podman machine stop <NAME>
 podman machine rm
+
+
+# Linux container capabilities as set by the container runtime (runc/crun)
+podman run --rm -it alpine:latest /bin/sh -c 'grep Cap /proc/1/status'
+podman ... --cap-drop=FOO ...         <--- remove/drop capabilities for a container instance
+man capabilities
+getcap /path/to/bin/example
+sudo setcap 'cap_foo,cap_bar+p' /path/to/bin/example  <--- +p for permitted
+/path/to/bin/example & grep Cap /proc/$(pgrep example)/status
+capsh --decode=<BITMAP HEX VALUE>     <--- human readable: cap_foo,cap_bar,...
+/usr/shar/containers/containers.conf  <--- default capabilities used for containers
 
 
 ## 'python3.14 -m ensurepip --upgrade --default-pip' returned non-zero exit status 1 workaround
