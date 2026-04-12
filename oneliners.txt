@@ -742,7 +742,7 @@ podman machine rm
 
 # Linux container capabilities as set by the container runtime (runc/crun)
 podman run --rm -it alpine:latest /bin/sh -c 'grep Cap /proc/1/status'
-podman ... --cap-drop=FOO ...         <--- remove/drop capabilities for a container instance
+podman ... --cap-drop=FOO --cap-add=BAR ...  <--- add/remove/drop capabilities for a container instance
 man capabilities
 getcap /path/to/bin/example
 sudo setcap 'cap_foo,cap_bar+p' /path/to/bin/example  <--- +p for permitted
@@ -1010,6 +1010,7 @@ uv init --no-readme
 uv venv my_venv && source my_venv/bin/activate
 uv add --upgrade --requirements requirements.txt
 uv add --upgrade --requirements requirements-ci.txt --dev
+uv add --upgrade ruff --dev
 uv sync --all-extras --dev --frozen
 uv run ruff format *.py
 uv run ruff check *.py
