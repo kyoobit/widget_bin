@@ -250,6 +250,19 @@ git revert --continue
 git diff HEAD..origin/main
 git push
 git checkout production; git pull; git checkout staging; git merge production; git pull (sync from prod to staging)
+  ... fork! needs some files from that other branch
+git checkout <TARGET BRANCH>
+git fetch origin
+git checkout -b <NEW BRANCH>
+git restore --source origin/<SOURCE BRANCH> -- some/file.ext another/file.ext
+git status
+git diff -- some/file.ext
+git diff -- another/file.ext
+git add some/file.ext another/file.ext
+git status
+git commit -m 'Add some files from another branch'
+git push -u origin <NEW BRANCH> ...and create a merge request
+
 
 ## GPG - GNU Privacy Guard (PGP): ~/.gnupg
 gpg --list-keys
