@@ -567,6 +567,19 @@ netstat -anv | grep <PORT>  <--- any protocol matching port, lists the <PID>
 ps -Ao user,pid,command | grep -v grep | grep <PID> <--- find <PID> for the port
 
 
+## WTFork are you doing little process!?!?
+PID=<????>
+ps -p ${PID} -o pid,ppid,user,group,lstart,etimes,stat,wchan:32,cmd
+pstree -asp ${PID}
+sudo cat /proc/${PID}/status
+sudo cat /proc/${PID}/wchan
+sudo cat /proc/${PID}/cgroup
+sudo tr '\0' ' ' < /proc/${PID}/cmdline; echo
+sudo tr '\0' '\n' < /proc/${PID}/environ | grep -E '^(USER|SUDO_|HADOOP|JAVA|KRB5|PATH)='
+sudo ls -l /proc/${PID}/fd
+sudo lsof -p ${PID} -nP
+
+
 netstat --inet              <--- Connected sockets
 netstat --inet --listening  <--- Server sockets
 netstat --inet --all        <--- Both connected and server sockets
