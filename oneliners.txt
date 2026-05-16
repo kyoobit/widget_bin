@@ -161,40 +161,33 @@ find /some/path -regextype posix-awk -regex ".*PATTERN.*" -type f -mmin -15
 sudo gdb <path to binary> <path to core file>
 
 
-## Help message                                                      <--- getopt
-read -r -d '' help_message << EOM                                    <--- getopt
-usage: $(basename $0) [-h] [-a] [-b] [-c <value>] [<other>[ ...]]    <--- getopt
-                                                                     <--- getopt
-About...                                                             <--- getopt
-                                                                     <--- getopt
-arguments:                                                           <--- getopt
-  -h          Show this help message and exit.                       <--- getopt
-  -a          Some option without a value                            <--- getopt
-  -b          Another option without a value                         <--- getopt
-  -c <value>  Some option with a value                               <--- getopt
-  -v          Verbose mode                                           <--- getopt
-                                                                     <--- getopt
-Example usage:                                                       <--- getopt
-  $(basename $0) -a foo bar                                          <--- getopt
-EOM                                                                  <--- getopt
-                                                                     <--- getopt
-# Parse command-line arguments using getopt                          <--- getopt
-# getopt [options] -o|--options optstring [options] [--] parameters  <--- getopt
-# https://www.man7.org/linux/man-pages/man1/getopt.1.html            <--- getopt
-while getopts 'habc:v' opt; do                                       <--- getopt
-    case "${opt}" in                                                 <--- getopt
-        h ) printf "${help_message}\n\n"; exit 0;;                   <--- getopt
-        a ) x="x";;                                                  <--- getopt
-        b ) y="y";;                                                  <--- getopt
-        c ) z="${OPTARG}";;                                          <--- getopt
-        v ) verbose="verbose";;                                      <--- getopt
-    esac                                                             <--- getopt
-done                                                                 <--- getopt
-# Shift off the arguments from the path(s)                           <--- getopt
-shift "$((OPTIND - 1))";                                             <--- getopt
-for other_arg in "${@}"; do                                          <--- getopt
-    printf "other_arg=${other_arg}\n"                                <--- getopt
-done                                                                 <--- getopt
+## Help message                                                            <--- getopt
+# Parse command-line arguments with getopt                                 <--- getopt
+# On macOS, use `brew install gnu-getopt` for expected outcome             <--- getopt
+function parse_args() {                                                    <--- getopt
+    local getopt_cmd="$(which getopt)"                                     <--- getopt
+    local args                                                             <--- getopt
+    args=$("${getopt_cmd}" -o hvAM: \                                      <--- getopt
+        --long help,verbose,dryrun,dry-run,debug,all,more: \               <--- getopt
+        -n "$0" -- "$@") || exit 1                                         <--- getopt
+    eval set -- "${args}"                                                  <--- getopt
+                                                                           <--- getopt
+    while true; do                                                         <--- getopt
+        case "$1" in                                                       <--- getopt
+            -h | --help    ) printf "%s\n\n" "${HELP_MESSAGE}"; exit 0 ;;  <--- getopt
+            -v | --verbose ) VERBOSE="enabled"; shift ;;                   <--- getopt
+            --debug        ) VERBOSE="enabled"; DEBUG="enabled"; shift ;;  <--- getopt
+            --dry-run | --dryrun ) DRYRUN="enabled"; shift ;;              <--- getopt
+            -A | --all     ) ALL="enabled"; shift ;;                       <--- getopt
+            -M | --more    ) MORE="$2"; shift 2 ;;                         <--- getopt
+            --             ) shift; break ;;                               <--- getopt
+            *              ) break ;;                                      <--- getopt
+        esac                                                               <--- getopt
+    done                                                                   <--- getopt
+                                                                           <--- getopt
+    # Remaining positional args after --                                   <--- getopt
+    POSITIONAL_ARGS=("$@")                                                 <--- getopt
+}
 
 
 geo: curl -i http://ip-api.com/json/${ADDRESS} | jq
