@@ -1034,6 +1034,9 @@ uv sync --all-extras --dev --frozen
 uv run ruff format *.py
 uv run ruff check *.py
 uv run coverage run -m pytest -v tests/*.py && uv run coverage report -m
+uv run --with deptry deptry .                                       <--- Find package dependency issues
+uv run --with pipdeptree pipdeptree --reverse --packages <PACKAGE>  <--- What uses a package
+uv run python -c "import <PACKAGE>; print(<PACKAGE>.__file__)"
 uv run --python /path/to/my_venv/bin/python widget.py
 
 
