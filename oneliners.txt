@@ -190,7 +190,7 @@ function parse_args() {                                                    <--- 
 }
 
 
-geo: curl -i http://ip-api.com/json/${ADDRESS} | jq
+geo: curl -s http://ip-api.com/json/${ADDRESS} | jq -c
 
 
 ## Gherkin issue template
@@ -257,32 +257,38 @@ git commit -m 'Add some files from another branch'
 git push -u origin <NEW BRANCH> ...and create a merge request
 
 
-## GPG - GNU Privacy Guard (PGP): ~/.gnupg
-gpg --list-keys
-gpg --gen-random --armor 1 16
-gpg --dump-options
-gpg --rfc4880
-gpg --generate-key
-gpg --full-generate-key
-## Generate an "armored" key in ASCII
-gpg --import prikey.asc && shred -uvz prikey.asc
-gpg --list-secret-keys --keyid-format LONG
-gpg --armor --export-secret-keys you@example.net > prikey.asc
-gpg --armor --export you@example.net > pubkey.asc
-## Encrypt a message:
-gpg --import pubkey.asc
-gpg --encrypt --recipient you@example.net --armor < in.txt -o out.txt
-## Sign a message:
-gpg --sign in.txt --output signed.sig
-gpg --clearsign in.txt
-gpg --output out.sig --detach-sig in.txt
-gpg --verify out.sig in.txt
-## Decrypt a message:
-gpg --decrypt out.txt
+## GPG - GNU Privacy Guard (PGP): ~/.gnupg (.asc == ASCII "armored")
+gpg --dump-options  <--- all argument options
+gpg --armor --export you@example.net > my-gpg-public-key.asc        <--- export public key for other to use
+gpg --armor --export-secret-keys you@example.net >> my-gpg-key.asc  <--- export private key for backup
+gpg --export-ownertrust > my-gpg-ownertrust.txt                     <--- export owner trust for backup
+gpg --armor --gen-random 1 16                                       <--- like "openssl rand -base64 16"
+gpg --batch --pinentry-mode loopback ...                            <--- loopback mode for no prompt/automation
+gpg --batch --passphrase '<PASSWORD>' --quick-gen-key "Your Name you@example.net" default default never  <--- bad, no rotation pressure
+gpg --generate-key                                                  <--- generate key interactively
+gpg --full-generate-key                                             <--- generate key interactively with full options
+gpg --list-keys                                                     <--- list keys
+gpg --list-secret-keys --keyid-format LONG                          <--- list secret keys
+gpg --import my-gpg-public-key.asc
+gpg --import my-gpg-key.asc && shred -uvz my-gpg-key.asc
+gpg --import-ownertrust <KEY ID>
+echo "$(gpg --list-keys --with-colons you@example.net | awk -F: '/^fpr/{print $10; exit}'):6:" | gpg --import-ownertrust
+gpg --edit-key you@example.net                                      <--- 5 (ultimate), only trust your own keys
+gpg> trust                                                          <--- 5 (ultimate), only trust your own keys
+gpg> quit                                                           <--- 5 (ultimate), only trust your own keys
+gpg --batch --out message.txt.asc --encrypt --recipient you@example.net --armor message.txt
+gpg --sign message.txt --output signed.sig
+gpg --clearsign message.txt
+gpg --output out.sig --detach-sig message.txt
+gpg --verify out.sig message.txt
+gpg --batch --try-secret-key you@example.net --out message.txt --decrypt message.txt.asc
+gpg --delete-secret-key you@example.net
+gpg --delete-key you@example.net
 
 grep --line-buffered --color=always
 grep --line-buffered --color=always <PATTERN> || grep --color -E "^|<PATTERN>"
 grep -oE "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}" <--- IPv4-ish
+ripgrep (rg) <--- rust replacement for grep
 
 for n in {a..t}; do sudo hdparm -t /dev/sd${n}; done
 
