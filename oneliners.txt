@@ -78,7 +78,7 @@ crontab (but you know you should use systemd timers instead)
 # |  |  |  |  .- day of week (0 - 6) (Sunday=0 or 7) 
 # |  |  |  |  |  -or- sun,mon,tue,wed,thu,fri,sat
 # |  |  |  |  |  TEST: env > ~/cronenv; env - `cat ~/cronenv` /bin/sh
-# *  *  *  *  *  <command to be executed> 2>&1 >> <always log>
+# *  *  *  *  *  <command to be executed> >> <always log> 2>&1
 
 sudo dd if=/dev/zero of=/dev/sdj bs=1M status=progress <--- zero a disk to flush out sectors
 dd if=/path/to/some.iso of=/dev/disk4 bs=1m
