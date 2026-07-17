@@ -331,12 +331,12 @@ sudo ip link add bridge0 type bridge
 sudo ip link set <INTERFACE> master bridge0
 sudo ip address add <ADDRESS>/24 dev bridge0
 sudo ip link set dev bridge0
-sudo ip link set dev bridge0 up
+sudo ip link set dev bridge0 up    <--- ifup
 sudo ip route del <DST ADDRESS> via <GATEWAY> dev <INTERFACE>
 sudo ip route add <DST ADDRESS> via <GATEWAY> dev <INTERFACE> metric 100
 sudo ip route add default via <GATEWAY>
 sudo ip route change default via <GATEWAY> dev <INTERFACE> metric 100
-sudo ip link set <INTERFACE> down
+sudo ip link set <INTERFACE> down  <--- ifdown
 
 sudo iptables -n -L -v
 sudo vi /etc/sysconfig/iptables
@@ -362,7 +362,12 @@ show system uptime
 show system commit
 show system connections extensive    <--- current state of TCP sessions
 show | compare rollback 1
+configure                            <--- sync configuration, again
+set system login message "sync"      <--- sync configuration, again
+delete system login message          <--- sync configuration, again
+commit and-quit                      <--- sync configuration, again
 show configuration | display set
+show lldp neighbors                  <--- show every interface and what is connected to it
 show interfaces * terse | no-more
 show interfaces * terse | except \.
 show interfaces <PATTERN> | display set
@@ -432,7 +437,10 @@ kubectl exec -n <NAMESPACE> deployment/<NAME> -it -- <COMMAND>
 kubectl exec -n <NAMESPACE> deployment/<NAME> -it -- /bin/sh
 kubectl patch deployment/<NAME> --patch-file patch.yaml
 kubectl replace -f deployment.yaml --force
+kubectl rollout -n <NAMESPACE> history deployment/<NAMES>
 kubectl rollout -n <NAMESPACE> restart deployment/<NAMES>    <--- handle jiggle
+kubectl rollout -n <NAMESPACE> undo deployment/<NAMES>       <--- Roll back to prior version
+kubectl rollout -n <NAMESPACE> undo deployment/<NAMES> --to-revision=1  <--- Roll back to specific version
 kubectl scale -n <NAMESPACE> deployment/<NAME> --replicas=0  <--- handle jiggle
 kubectl scale -n <NAMESPACE> deployment/<NAME> --replicas=3  <--- handle jiggle
 kubectl delete -n <NAMESPACE> deployment/<NAME>
@@ -591,6 +599,11 @@ nohup <command> > file.log
 ## ss can be noisy and include more then what is required, use netstat instead
 netstat --tcp | awk '{states[\$NF]++} END {for (state in states) printf \"%s: %d\n\",state,states[state]}' | sort -nrk2"
 
+rclone copy file <config>:<bucket>/path/to/dir --progress
+rclone delete <config>:<bucket>/path/to --include "something*"
+rclone sync /path/from/source/ <config>:<bucket>/path/to/target/ --progress
+rclone lsd <config>:<bucket>/path/to/somthing/ --max-depth=1
+rclone lsl <config>:<bucket>/path/to --include "something*"
 
 ## WTF state capture:
 ss -ant | tee ~/$(hostname).sockets.$(date '+%s')
