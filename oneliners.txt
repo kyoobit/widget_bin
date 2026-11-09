@@ -58,6 +58,10 @@ BCRYPT_HASH=$(python3 -c "import bcrypt; print(bcrypt.hashpw(b'<PASSWORD>', bcry
 BCRYPT_HASH=$(htpasswd -bnBC 10 "" '<PASSWORD>' | tr -d ':\n');
 
 
+sudo chattr +i <FILE>  # set immutable attribute on a file (-i to remove)
+lsattr <FILE>  # check for i in output
+
+
 ## Command-Line move and delete commands:
 ┌──────────┬───────────────────────┬───────────────────────────────────────────┐
 │ GROUP    │ <---  DIRECTION  ---> │ USAGE                                     │
@@ -211,9 +215,9 @@ Then [the outcome of action is observed]
 
 ## Git branch and merge cycle
 git clone <url>
-git checkout main
+git switch main
 git pull
-git checkout -b <branch name>
+git switch -c <BRANCH>
   feature/<feature-id>/<description>
   fix/<issue-id>/<description>
   release/<release-string>
@@ -222,39 +226,37 @@ git merge main
 git stash (stash changes)
 git reset --soft (keeps local changes)
 git reset --hard (destructive to last commit)
-git checkout . (????)
-  ...work, work, work ...
 git status
 git add <files>
 git commit -m '<a useful message>'
   ...whoops, forgot something, edit and:
 git commit --amend --no-edit
-git push -u origin <branch name>
+git push -u origin <BRANCH>
   ...follow open pull request instructions...
-git checkout main
+git switch main
 git pull
-git branch -d <branch name>
+git branch -d <BRANCH>
 git stash pop (restore stashed changes)
   ...fork! rollback
-git checkout -b <revert_something>
+git switch <BRANCH>
 git log -n 3
 git revert --no-commit --mainline 1 HEAD~1
 git revert --continue
 git diff HEAD..origin/main
 git push
-git checkout production; git pull; git checkout staging; git merge production; git pull (sync from prod to staging)
+git switch main; git pull; git checkout <BRANCH>; git merge main; git pull  <--- (sync from main to <branch>)
   ... fork! needs some files from that other branch
-git checkout <TARGET BRANCH>
+git switch <other branch name>
 git fetch origin
-git checkout -b <NEW BRANCH>
-git restore --source origin/<SOURCE BRANCH> -- some/file.ext another/file.ext
+git switch -c <BRANCH>
+git restore --source origin/<OTHER BRANCH> -- some/file.ext another/file.ext
 git status
 git diff -- some/file.ext
 git diff -- another/file.ext
 git add some/file.ext another/file.ext
 git status
 git commit -m 'Add some files from another branch'
-git push -u origin <NEW BRANCH> ...and create a merge request
+git push -u origin <BRANCH> ...and create a merge request
 
 
 ## GPG - GNU Privacy Guard (PGP): ~/.gnupg (.asc == ASCII "armored")
@@ -395,6 +397,7 @@ set interface <INTERFACE> [<unit#>] disable
 delete interface <INTERFACE> [<unit#>] disable
 enable interface <INTERFACE>
 request system storage cleanup dry-run
+request system reboot member <NUM>
 request system reboot
 request system power-off
 
